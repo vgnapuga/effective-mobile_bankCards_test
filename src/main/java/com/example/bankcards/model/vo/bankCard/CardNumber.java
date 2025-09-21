@@ -18,7 +18,7 @@ public final class CardNumber extends BaseValueObject<String> {
     @Override
     protected void checkValidation(final String value) {
         if (value.isBlank())
-            throw new DomainValidationException("Card number is <blank>");
+            throw new DomainValidationException("Card number value is <blank>");
 
         if (value.length() != CARD_NUMBER_LENGTH)
             throw new DomainValidationException(
