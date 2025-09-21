@@ -1,7 +1,8 @@
 package com.example.bankcards.model.role;
 
 
-import com.example.bankcards.exception.DomainValidationException;
+import java.util.Objects;
+
 import com.example.bankcards.model.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -22,15 +23,8 @@ public class Role extends BaseEntity {
     public Role() {
     }
 
-    public static Role of(final RoleName name) {
-        if (name == null)
-            throw new DomainValidationException("Role name is <null>");
-
-        return new Role(name);
-    }
-
-    private Role(final RoleName name) {
-        this.name = name;
+    public Role(final RoleName name) {
+        this.name = Objects.requireNonNull(name, "Role value is <null>");
     }
 
     public final RoleName getName() {
