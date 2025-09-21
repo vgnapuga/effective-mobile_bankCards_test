@@ -8,13 +8,13 @@ import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.model.vo.BaseValueObject;
 
 
-public final class ExpiryDate extends BaseValueObject<LocalDate> {
+public final class CardExpiryDate extends BaseValueObject<LocalDate> {
 
-    public static ExpiryDate of(final int year, final int month) {
-        return new ExpiryDate(year, month);
+    public static CardExpiryDate of(final int year, final int month) {
+        return new CardExpiryDate(year, month);
     }
 
-    private ExpiryDate(final int year, final int month) {
+    private CardExpiryDate(final int year, final int month) {
         super(createValidLocalDate(year, month));
     }
 
