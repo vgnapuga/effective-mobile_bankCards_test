@@ -33,7 +33,7 @@ public final class ExpiryDate extends BaseValueObject<LocalDate> {
     }
 
     @Override
-    public final String toString() {
+    public String toString() {
         return String.format("ExpiryDate{value=%02d/%02d}", this.value.getMonthValue(), this.value.getYear() % 100);
     }
 
