@@ -1,4 +1,4 @@
-package com.example.bankcards.model.vo;
+package com.example.bankcards.model;
 
 
 import com.example.bankcards.exception.DomainValidationException;

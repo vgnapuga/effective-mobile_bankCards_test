@@ -1,8 +1,8 @@
-package com.example.bankcards.model.vo.user;
+package com.example.bankcards.model.user.vo;
 
 
 import com.example.bankcards.exception.DomainValidationException;
-import com.example.bankcards.model.vo.BaseValueObject;
+import com.example.bankcards.model.BaseValueObject;
 
 
 public final class Password extends BaseValueObject<String> {

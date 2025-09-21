@@ -1,10 +1,10 @@
-package com.example.bankcards.model.vo.bankCard;
+package com.example.bankcards.model.card.vo;
 
 
 import java.math.BigDecimal;
 
 import com.example.bankcards.exception.DomainValidationException;
-import com.example.bankcards.model.vo.BaseValueObject;
+import com.example.bankcards.model.BaseValueObject;
 
 
 public final class CardBalance extends BaseValueObject<BigDecimal> {

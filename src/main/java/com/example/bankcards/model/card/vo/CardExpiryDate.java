@@ -1,11 +1,11 @@
-package com.example.bankcards.model.vo.bankCard;
+package com.example.bankcards.model.card.vo;
 
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
 
 import com.example.bankcards.exception.DomainValidationException;
-import com.example.bankcards.model.vo.BaseValueObject;
+import com.example.bankcards.model.BaseValueObject;
 
 
 public final class CardExpiryDate extends BaseValueObject<LocalDate> {
