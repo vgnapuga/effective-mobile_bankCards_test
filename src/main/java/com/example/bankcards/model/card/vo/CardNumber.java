@@ -52,6 +52,10 @@ public final class CardNumber extends BaseValueObject<String> {
         return sum % 10 == 0;
     }
 
+    public final String getLastDigits() {
+        return this.value.substring(CARD_NUMBER_LENGTH - UNMASKED_CARD_NUMBER_LENGTH);
+    }
+
     @Override
     public String toString() {
         return String.format(
