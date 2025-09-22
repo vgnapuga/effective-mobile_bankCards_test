@@ -10,10 +10,12 @@ import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.model.BaseEntity;
 import com.example.bankcards.model.role.Role;
 import com.example.bankcards.model.role.RoleName;
+import com.example.bankcards.model.user.converter.EmailConverter;
 import com.example.bankcards.model.user.vo.Email;
 import com.example.bankcards.model.user.vo.Password;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -31,6 +33,7 @@ public class User extends BaseEntity {
     private static final String NULL_ROLE_MESSAGE = "User role is <null>";
 
     @Column(name = "email", nullable = false, unique = true)
+    @Convert(converter = EmailConverter.class)
     private Email email;
 
     @Column(name = "password", nullable = false)
