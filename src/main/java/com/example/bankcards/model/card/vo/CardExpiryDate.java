@@ -11,11 +11,11 @@ import com.example.bankcards.model.BaseValueObject;
 public final class CardExpiryDate extends BaseValueObject<LocalDate> {
 
     public static CardExpiryDate of(final int year, final int month) {
-        return new CardExpiryDate(year, month);
+        return new CardExpiryDate(createValidLocalDate(year, month));
     }
 
-    private CardExpiryDate(final int year, final int month) {
-        super(createValidLocalDate(year, month));
+    private CardExpiryDate(final LocalDate value) {
+        super(value);
     }
 
     private static LocalDate createValidLocalDate(final int year, final int month) {
