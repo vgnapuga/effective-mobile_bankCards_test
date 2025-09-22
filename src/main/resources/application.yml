@@ -6,3 +6,8 @@
   - Указать порт приложения.
   - Настроить параметры безопасности и JWT.
   - Включить Swagger UI.
+
+app:
+  security:
+    # Тестовый ключ только для демонстрации! В production использовать переменные окружения
+    card-encryption-key: ${CARD_ENCRYPTION_KEY:dGVzdC1rZXktMjU2LWJpdC1mb3ItZGV2ZWxvcG1lbnQhISE=}
