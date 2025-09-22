@@ -43,4 +43,12 @@ public class CardEncryptionException extends RuntimeException {
 
     }
 
+    public static class InvalidFormatException extends CardEncryptionException {
+
+        public InvalidFormatException(final String message) {
+            super(message);
+        }
+
+    }
+
 }
