@@ -11,6 +11,7 @@ import com.example.bankcards.model.BaseEntity;
 import com.example.bankcards.model.role.Role;
 import com.example.bankcards.model.role.RoleName;
 import com.example.bankcards.model.user.converter.EmailConverter;
+import com.example.bankcards.model.user.converter.PasswordConverter;
 import com.example.bankcards.model.user.vo.Email;
 import com.example.bankcards.model.user.vo.Password;
 
@@ -37,6 +38,7 @@ public class User extends BaseEntity {
     private Email email;
 
     @Column(name = "password", nullable = false)
+    @Convert(converter = PasswordConverter.class)
     private Password password;
 
     @ManyToMany(fetch = FetchType.EAGER)
