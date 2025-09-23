@@ -29,10 +29,6 @@ import jakarta.persistence.Table;
 @Table(name = "users")
 public class User extends BaseEntity {
 
-    private static final String NULL_EMAIL_MESSAGE = "User email is <null>";
-    private static final String NULL_PASSWORD_MESSAGE = "User password is <null>";
-    private static final String NULL_ROLE_MESSAGE = "User role is <null>";
-
     @Column(name = "email", nullable = false, unique = true)
     @Convert(converter = EmailConverter.class)
     private Email email;
@@ -54,15 +50,15 @@ public class User extends BaseEntity {
     }
 
     private User(final Email email, final Password password, final Set<Role> roles) {
-        this.email = Objects.requireNonNull(email, NULL_EMAIL_MESSAGE);
-        this.password = Objects.requireNonNull(password, NULL_PASSWORD_MESSAGE);
+        this.email = Objects.requireNonNull(email, generateNullMessageFor("email"));
+        this.password = Objects.requireNonNull(password, generateNullMessageFor("password"));
         this.roles = roles;
     }
 
     public User(final Email email, final Password password, final Role role) {
-        this.email = Objects.requireNonNull(email, NULL_EMAIL_MESSAGE);
-        this.password = Objects.requireNonNull(password, NULL_PASSWORD_MESSAGE);
-        this.roles.add(Objects.requireNonNull(role, NULL_ROLE_MESSAGE));
+        this.email = Objects.requireNonNull(email, generateNullMessageFor("email"));
+        this.password = Objects.requireNonNull(password, generateNullMessageFor("password"));
+        this.roles.add(Objects.requireNonNull(role, generateNullMessageFor("role")));
     }
 
     public static final void validateRoles(final Set<Role> roles) {
@@ -87,11 +83,11 @@ public class User extends BaseEntity {
     }
 
     public final void changeEmail(final Email newEmail) {
-        this.email = newEmail;
+        this.email = Objects.requireNonNull(newEmail, generateNullMessageFor("new email"));
     }
 
     public final void changePassword(final Password newPassword) {
-        this.password = newPassword;
+        this.password = Objects.requireNonNull(newPassword, generateNullMessageFor("new password"));
     }
 
     public final void changeRoles(final Set<Role> newRoles) {
@@ -102,7 +98,7 @@ public class User extends BaseEntity {
     }
 
     public final void addRole(final Role newRole) {
-        this.roles.add(Objects.requireNonNull(newRole, NULL_ROLE_MESSAGE));
+        this.roles.add(Objects.requireNonNull(newRole, generateNullMessageFor("role")));
     }
 
     public final void removeRole(final Role roleToRemove) {
