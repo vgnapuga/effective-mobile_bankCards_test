@@ -3,13 +3,10 @@ package com.example.bankcards.model.card.vo;
 
 import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.model.BaseValueObject;
+import com.example.bankcards.util.constant.CardConstants;
 
 
 public final class CardNumber extends BaseValueObject<String> {
-
-    private static final int CARD_NUMBER_LENGTH = 16;
-    private static final String CARD_REGEX = "\\d{" + CARD_NUMBER_LENGTH + "}";
-    private static final int UNMASKED_CARD_NUMBER_LENGTH = 4;
 
     public CardNumber(final String value) {
         super(value);
@@ -18,17 +15,13 @@ public final class CardNumber extends BaseValueObject<String> {
     @Override
     protected void checkValidation(final String value) {
         if (value.isBlank())
-            throw new DomainValidationException("Card number value is <blank>");
+            throw new DomainValidationException(CardConstants.CardNumber.DOMAIN_BLANK_MESSAGE);
 
-        if (value.length() != CARD_NUMBER_LENGTH)
-            throw new DomainValidationException(
-                    String.format("Invalid card number length: %d (should be %d)", value.length(), CARD_NUMBER_LENGTH));
-
-        if (!value.matches(CARD_REGEX))
-            throw new DomainValidationException("Card number must contain only digits");
+        if (!value.matches(CardConstants.CardNumber.CARD_REGEX))
+            throw new DomainValidationException(CardConstants.CardNumber.DOMAIN_INVALID_FORMAT_MESSAGE);
 
         if (!passesLuhnCheck(value))
-            throw new DomainValidationException("Card number failed Luhn checksum validation");
+            throw new DomainValidationException(CardConstants.CardNumber.DOMAIN_LUHN_FAILED_MESSAGE);
     }
 
     private static boolean passesLuhnCheck(final String cardNumber) {
@@ -53,14 +46,13 @@ public final class CardNumber extends BaseValueObject<String> {
     }
 
     public final String getLastDigits() {
-        return this.value.substring(CARD_NUMBER_LENGTH - UNMASKED_CARD_NUMBER_LENGTH);
+        return this.value.substring(
+                CardConstants.CardNumber.CARD_NUMBER_LENGTH - CardConstants.CardNumber.UNMASKED_CARD_NUMBER_LENGTH);
     }
 
     @Override
     public String toString() {
-        return String.format(
-                "CardNumber{value=**** **** **** %s}",
-                value.substring(CARD_NUMBER_LENGTH - UNMASKED_CARD_NUMBER_LENGTH));
+        return String.format("CardNumber{value=**** **** **** %s}", getLastDigits());
     }
 
 }
