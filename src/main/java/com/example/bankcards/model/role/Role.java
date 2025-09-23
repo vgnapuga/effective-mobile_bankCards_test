@@ -24,7 +24,7 @@ public class Role extends BaseEntity {
     }
 
     public Role(final RoleName name) {
-        this.name = Objects.requireNonNull(name, "Role value is <null>");
+        this.name = Objects.requireNonNull(name, generateNullMessageFor("name"));
     }
 
     public final RoleName getName() {
