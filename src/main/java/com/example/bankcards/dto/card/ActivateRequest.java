@@ -1,12 +1,8 @@
 package com.example.bankcards.dto.card;
 
 
-import com.example.bankcards.util.constant.CardConstants;
-
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import com.example.bankcards.dto.validation.ValidCardId;
 
 
-public record ActivateRequest(
-        @NotNull(message = CardConstants.DTO_REQUIRED_ID_MESSAGE) @Positive(message = CardConstants.DTO_NEGATIVE_ID_MESSAGE) Long cardId) {
+public record ActivateRequest(@ValidCardId Long cardId) {
 }
