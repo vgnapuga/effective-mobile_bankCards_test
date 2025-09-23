@@ -2,6 +2,7 @@ package com.example.bankcards.model.card;
 
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -82,18 +83,20 @@ public class Card extends BaseEntity {
             final CardExpiryDate expiryDate,
             final CardStatus status,
             final CardBalance balance) {
-        this.cardNumber = cardNumber;
-        this.encryptedCardNumber = encryptedCardNumber;
-        this.last4 = last4;
-        this.owner = owner;
-        this.expiryDate = expiryDate;
-        this.status = status;
-        this.balance = balance;
+        this.cardNumber = Objects.requireNonNull(cardNumber, generateNullMessageFor("number"));
+        this.encryptedCardNumber = Objects.requireNonNull(
+                encryptedCardNumber,
+                generateNullMessageFor("encrypted number"));
+        this.last4 = Objects.requireNonNull(last4, generateNullMessageFor("number last four digits"));
+        this.owner = Objects.requireNonNull(owner, generateNullMessageFor("owner"));
+        this.expiryDate = Objects.requireNonNull(expiryDate, generateNullMessageFor("expiry date"));
+        this.status = Objects.requireNonNull(status, generateNullMessageFor("status"));
+        this.balance = Objects.requireNonNull(balance, generateNullMessageFor("balance"));
     }
 
     public final void changeStatus(CardStatus newStatus) {
         if (newStatus == null)
-            throw new DomainValidationException("New card status is <null>");
+            throw new DomainValidationException(generateNullMessageFor("new status"));
 
         this.status = newStatus;
     }
