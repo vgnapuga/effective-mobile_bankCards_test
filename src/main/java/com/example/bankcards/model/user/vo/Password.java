@@ -3,12 +3,10 @@ package com.example.bankcards.model.user.vo;
 
 import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.model.BaseValueObject;
+import com.example.bankcards.util.constant.UserConstants;
 
 
 public final class Password extends BaseValueObject<String> {
-
-    private static final int BCRYPT_HASH_SIZE = 60;
-    private static final String[] BCRYPT_HASH_PREFIXES = { "$2a$", "$2b$", "$2y$" };
 
     public Password(final String hashedValue) {
         super(hashedValue);
@@ -19,14 +17,11 @@ public final class Password extends BaseValueObject<String> {
         if (hashedValue.isBlank())
             throw new DomainValidationException("Password hashed value is <blank>");
 
-        if (hashedValue.length() != BCRYPT_HASH_SIZE)
+        if (hashedValue.length() != UserConstants.Password.BCRYPT_HASH_SIZE)
             throw new DomainValidationException(
-                    String.format(
-                            "Invalid password hashed value length: %d (should be: %d)",
-                            hashedValue.length(),
-                            BCRYPT_HASH_SIZE));
+                    UserConstants.Password.domainInvalidLengthMessage(hashedValue.length()));
 
-        for (String prefix : BCRYPT_HASH_PREFIXES) {
+        for (String prefix : UserConstants.Password.BCRYPT_HASH_PREFIXES) {
             if (hashedValue.startsWith(prefix))
                 return;
         }
