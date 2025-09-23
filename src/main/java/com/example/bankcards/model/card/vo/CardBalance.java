@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.model.BaseValueObject;
+import com.example.bankcards.util.constant.CardConstants;
 
 
 public final class CardBalance extends BaseValueObject<BigDecimal> {
@@ -16,10 +17,10 @@ public final class CardBalance extends BaseValueObject<BigDecimal> {
     @Override
     protected void checkValidation(final BigDecimal value) {
         if (value.scale() > 2)
-            throw new DomainValidationException("Card balance cannot have more than 2 decimal places");
+            throw new DomainValidationException(CardConstants.CardBalance.DOMAIN_INVALID_SCALE_MESSAGE);
 
         if (value.compareTo(BigDecimal.ZERO) < 0)
-            throw new DomainValidationException(String.format("Card balance < 0 (%s)", value.toString()));
+            throw new DomainValidationException(CardConstants.CardBalance.domainNegativeBalanceMessage(value));
     }
 
 }
