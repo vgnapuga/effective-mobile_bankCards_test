@@ -15,7 +15,7 @@ public final class Password extends BaseValueObject<String> {
     @Override
     protected void checkValidation(final String hashedValue) {
         if (hashedValue.isBlank())
-            throw new DomainValidationException("Password hashed value is <blank>");
+            throw new DomainValidationException(UserConstants.Password.DOMAIN_BLANK_MESSAGE);
 
         if (hashedValue.length() != UserConstants.Password.BCRYPT_HASH_SIZE)
             throw new DomainValidationException(
@@ -25,7 +25,7 @@ public final class Password extends BaseValueObject<String> {
             if (hashedValue.startsWith(prefix))
                 return;
         }
-        throw new DomainValidationException("Invalid password hashed value format");
+        throw new DomainValidationException(UserConstants.Password.DOMAIN_INVALID_FORMAT_MESSAGE);
     }
 
     @Override
