@@ -37,6 +37,10 @@ public abstract class BaseEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
+    protected final String generateNullMessageFor(final String attributeName) {
+        return String.format("%s %s is <null>", this.getClass().getSimpleName(), attributeName.toLowerCase());
+    }
+
     public final Long getId() {
         return this.id;
     }
