@@ -10,7 +10,15 @@ public class CardConstants {
         throw new UnsupportedOperationException("CardConstants.java - utility class");
     }
 
-    public static final String DTO_OWNER_REQUIRED_MESSAGE = "Card owner is required";
+    public static final String DTO_REQUIRED_ID_MESSAGE = "Card ID is required";
+    public static final String DTO_NEGATIVE_ID_MESSAGE = "Card ID cannot be negative";
+
+    public static final class CardOwner {
+
+        public static final String DTO_REQUIRED_MESSAGE = "Card owner is required";
+        public static final String DTO_NEGATIVE_ID_MESSAGE = "Card owner ID cannot be negative";
+
+    }
 
     public static final class CardNumber {
 
@@ -47,6 +55,7 @@ public class CardConstants {
         public static final int EXPIRY_DAY_OF_MONTH = 1;
 
         public static final String DTO_REQUIRED_MESSAGE = "Card expiry date is required";
+        public static final String DTO_PAST_DATE_MESSAGE = "Card expiry date cannot be in past for new card";
 
         private static final String TEMPLATE_DOMAIN_INVALID_FORMAT = "Invalid CardExpiryDate values: year=%d, month=%d";
 
