@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.model.BaseValueObject;
+import com.example.bankcards.util.constant.CardConstants;
 
 
 public final class CardExpiryDate extends BaseValueObject<LocalDate> {
@@ -20,10 +21,10 @@ public final class CardExpiryDate extends BaseValueObject<LocalDate> {
 
     private static LocalDate createValidLocalDate(final int year, final int month) {
         try {
-            LocalDate validDate = LocalDate.of(year, month, 1);
+            LocalDate validDate = LocalDate.of(year, month, CardConstants.CardExpiryDate.EXPIRY_DAY_OF_MONTH);
             return validDate;
         } catch (DateTimeException exception) {
-            throw new DomainValidationException(String.format("Invalid expiry date: year=%d, month=%d", year, month));
+            throw new DomainValidationException(CardConstants.CardExpiryDate.domainInvalidFormatMessage(year, month));
         }
     }
 
