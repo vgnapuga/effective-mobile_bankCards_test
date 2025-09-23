@@ -3,6 +3,6 @@ package com.example.bankcards.model.card;
 
 public enum CardStatus {
 
-    ACTIVE, BLOCKED, EXPIRED
+    PENDING_ACTIVATION, ACTIVE, BLOCKED, EXPIRED
 
 }
