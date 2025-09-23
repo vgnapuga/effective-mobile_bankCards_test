@@ -1,7 +1,7 @@
 package com.example.bankcards.util.constant;
 
 
-public final class UserConstants {
+public class UserConstants {
 
     private UserConstants() {
         throw new UnsupportedOperationException("UserConstants.java - utility class");
@@ -18,9 +18,9 @@ public final class UserConstants {
         public static final String DTO_INVALID_LENGTH_MESSAGE = "Email must not exceed " + MAX_LENGTH + " characters";
 
         public static final String DOMAIN_BLANK_MESSAGE = "Email value is <blank>";
-        public static final String DOMAIN_INVALID_FORMAT_MESSAGE = "Invalid email value format";
+        public static final String DOMAIN_INVALID_FORMAT_MESSAGE = "Invalid Email value format";
 
-        private static final String TEMPLATE_DOMAIN_INVALID_LENGTH = "Invalid email value length: %d (max allowed: %d)";
+        private static final String TEMPLATE_DOMAIN_INVALID_LENGTH = "Invalid Email value length: %d (max allowed: %d)";
 
         public static final String domainInvalidLengthMessage(final int actualLength) {
             return String.format(TEMPLATE_DOMAIN_INVALID_LENGTH, actualLength, MAX_LENGTH);
@@ -39,9 +39,9 @@ public final class UserConstants {
                 " characters";
 
         public static final String DOMAIN_BLANK_MESSAGE = "Password value is <blank>";
-        public static final String DOMAIN_INVALID_FORMAT_MESSAGE = "Invalid password value format";
+        public static final String DOMAIN_INVALID_FORMAT_MESSAGE = "Invalid Password value format";
 
-        private static final String TEMPLATE_DOMAIN_INVALID_LENGTH = "Invalid password value length: %d (must be: %d)";
+        private static final String TEMPLATE_DOMAIN_INVALID_LENGTH = "Invalid Password value length: %d (must be: %d)";
 
         public static final String domainInvalidLengthMessage(final int actualLength) {
             return String.format(TEMPLATE_DOMAIN_INVALID_LENGTH, actualLength, BCRYPT_HASH_SIZE);
