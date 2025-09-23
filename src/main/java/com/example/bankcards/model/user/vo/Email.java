@@ -3,12 +3,10 @@ package com.example.bankcards.model.user.vo;
 
 import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.model.BaseValueObject;
+import com.example.bankcards.util.constant.UserConstants;
 
 
 public final class Email extends BaseValueObject<String> {
-
-    private static final int MAX_LENGTH = 255;
-    private static final String REGEX = "^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
     public Email(final String value) {
         super(value);
@@ -17,14 +15,13 @@ public final class Email extends BaseValueObject<String> {
     @Override
     protected void checkValidation(final String value) {
         if (value.isBlank())
-            throw new DomainValidationException("Email value is <blank>");
+            throw new DomainValidationException(UserConstants.Email.DOMAIN_BLANK_MESSAGE);
 
-        if (value.length() > MAX_LENGTH)
-            throw new DomainValidationException(
-                    String.format("Invalid email length: %d (max allowed: %d)", value.length(), MAX_LENGTH));
+        if (value.length() > UserConstants.Email.MAX_LENGTH)
+            throw new DomainValidationException(UserConstants.Email.domainInvalidLengthMessage(value.length()));
 
-        if (!value.matches(REGEX))
-            throw new DomainValidationException("Invalid email format");
+        if (!value.matches(UserConstants.Email.REGEX))
+            throw new DomainValidationException(UserConstants.Email.DOMAIN_INVALID_FORMAT_MESSAGE);
     }
 
 }
