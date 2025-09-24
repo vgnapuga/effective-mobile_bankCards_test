@@ -24,6 +24,9 @@ public abstract class BaseService {
     }
 
     protected final void validatePagination(final Pageable pageable) {
+        if (pageable == null)
+            throw new BusinessRuleViolationException("Pageable is required");
+
         int size = pageable.getPageSize();
         int page = pageable.getPageNumber();
 

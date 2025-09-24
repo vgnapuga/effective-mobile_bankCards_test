@@ -94,9 +94,6 @@ public class UserService extends BaseService {
 
     @Transactional(readOnly = true)
     public final Page<User> getAllUsers(final Long adminId, final Pageable pageable) {
-        if (pageable == null)
-            throw new BusinessRuleViolationException("Pageable is required");
-
         validatePagination(pageable);
 
         validateId(adminId);
