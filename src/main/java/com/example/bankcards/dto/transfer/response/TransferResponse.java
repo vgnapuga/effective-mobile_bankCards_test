@@ -23,7 +23,12 @@ public record TransferResponse(
         String toCardLast4 = nonNullTransfer.getToCard().getLast4();
         BigDecimal amountValue = nonNullTransfer.getAmount().getValue();
 
-        return new TransferResponse(transfer.getId(), fromCardLast4, toCardLast4, amountValue, LocalDateTime.now());
+        return new TransferResponse(
+                transfer.getId(),
+                fromCardLast4,
+                toCardLast4,
+                amountValue,
+                transfer.getCreationTime());
     }
 
 }
