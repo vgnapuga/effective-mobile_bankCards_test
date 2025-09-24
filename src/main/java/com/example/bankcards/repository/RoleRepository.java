@@ -13,6 +13,6 @@ import com.example.bankcards.model.role.RoleName;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-    Optional<Role> findByName(RoleName name);
+    Optional<Role> findByName(final RoleName name);
 
 }

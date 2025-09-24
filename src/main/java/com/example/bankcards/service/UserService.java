@@ -47,13 +47,13 @@ public class UserService extends BaseService {
                     UserConstants.Password.servicePasswordInvalidLengthMessage(rawPassword.length()));
     }
 
-    private void checkAdminPermissionTo(final String operationName, final Long adminId) {
+    public void checkAdminPermissionTo(final String operationName, final Long adminId) {
         userRepository.findAdminById(adminId).orElseThrow(
                 () -> new AccessDeniedException(
                         String.format("Permission to %s denied for id=%d", operationName, adminId)));
     }
 
-    private User findUserById(final Long userId) {
+    public User findUserById(final Long userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException(String.format("User with id=%d not found", userId)));
     }
