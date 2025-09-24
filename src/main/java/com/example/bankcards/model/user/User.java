@@ -69,6 +69,14 @@ public class User extends BaseEntity {
             throw new BusinessRuleViolationException("User must have at least 1 role");
     }
 
+    public final void giveAdminRole() {
+        this.roles.add(new Role(RoleName.ADMIN));
+    }
+
+    public final void removeAdminRole() {
+        this.roles.removeIf(role -> role.getName().equals(RoleName.ADMIN));
+    }
+
     public final boolean isAdmin() {
         return isHasRole(RoleName.ADMIN);
     }

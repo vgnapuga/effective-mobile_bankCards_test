@@ -49,9 +49,14 @@ public class UserConstants {
         public static final String DOMAIN_INVALID_FORMAT_MESSAGE = "Invalid Password value format";
 
         private static final String TEMPLATE_DOMAIN_INVALID_LENGTH = "Invalid Password value length: %d (must be: %d)";
+        private static final String TEMPLATE_SERVICE_INVALID_LENGTH = "Invalid raw password length: %d (must be at least: %d)";
 
         public static final String domainInvalidLengthMessage(final int actualLength) {
             return String.format(TEMPLATE_DOMAIN_INVALID_LENGTH, actualLength, BCRYPT_HASH_SIZE);
+        }
+
+        public static final String servicePasswordInvalidLengthMessage(final int actualLength) {
+            return String.format(TEMPLATE_SERVICE_INVALID_LENGTH, actualLength, RAW_PASSWORD_MIN_SIZE);
         }
 
     }
