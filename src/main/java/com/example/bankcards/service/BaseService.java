@@ -22,7 +22,7 @@ public abstract class BaseService {
     }
 
     protected final void validatePagination(final int page, final int size) {
-        if (page <= 1)
+        if (page < 0)
             throw new BusinessRuleViolationException(String.format(TEMPLATE_NEGATIVE_PAGE_MESSAGE, page));
 
         if (size <= 0)
