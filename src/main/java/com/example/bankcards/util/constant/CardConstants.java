@@ -65,16 +65,4 @@ public class CardConstants {
 
     }
 
-    public static class TransferAmount {
-
-        public static final String MIN_VALUE = "0.01";
-        public static final int INTEGER_VALUE = 10;
-        public static final int FRACTION_VALUE = 2;
-
-        public static final String DTO_REQUIRED_MESSAGE = "Transfer amount is required";
-        public static final String DTO_NEGATIVE_OR_ZERO_MESSAGE = "Transfer amount must be positive";
-        public static final String DTO_INVALID_FORMAT_MESSAGE = "Invalid transfer amount format";
-
-    }
-
 }
