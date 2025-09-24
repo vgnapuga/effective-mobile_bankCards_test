@@ -97,7 +97,7 @@ public class UserService extends BaseService {
         if (pageable == null)
             throw new BusinessRuleViolationException("Pageable is required");
 
-        validatePagination(pageable.getPageNumber(), pageable.getPageSize());
+        validatePagination(pageable);
 
         validateId(adminId);
         checkAdminPermissionTo("get all users", adminId);

@@ -1,6 +1,8 @@
 package com.example.bankcards.service;
 
 
+import org.springframework.data.domain.Pageable;
+
 import com.example.bankcards.exception.BusinessRuleViolationException;
 import com.example.bankcards.exception.DomainValidationException;
 
@@ -21,7 +23,10 @@ public abstract class BaseService {
             throw new BusinessRuleViolationException(String.format(TEMPLATE_LESS_THAN_ONE_ID_MESSAGE, id));
     }
 
-    protected final void validatePagination(final int page, final int size) {
+    protected final void validatePagination(final Pageable pageable) {
+        int size = pageable.getPageSize();
+        int page = pageable.getPageNumber();
+
         if (page < 0)
             throw new BusinessRuleViolationException(String.format(TEMPLATE_NEGATIVE_PAGE_MESSAGE, page));
 
