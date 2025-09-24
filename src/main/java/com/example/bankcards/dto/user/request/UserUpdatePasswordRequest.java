@@ -4,5 +4,5 @@ package com.example.bankcards.dto.user.request;
 import com.example.bankcards.dto.validation.user.ValidPassword;
 
 
-public record UpdatePasswordRequest(@ValidPassword String password) {
+public record UserUpdatePasswordRequest(@ValidPassword String password) {
 }
