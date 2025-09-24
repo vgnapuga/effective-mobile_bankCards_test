@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 
 public class TransferConstants {
 
+    public static final String DTO_REQUIRED_MESSAGE = "Transfer is required";
+
     public static final class Amount {
 
         public static final int SCALE_SIZE = 2;

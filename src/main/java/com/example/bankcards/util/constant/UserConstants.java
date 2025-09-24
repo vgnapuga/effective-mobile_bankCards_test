@@ -3,6 +3,8 @@ package com.example.bankcards.util.constant;
 
 public class UserConstants {
 
+    public static final String DTO_REQUIRED_MESSAGE = "User is required";
+
     private UserConstants() {
         throw new UnsupportedOperationException("UserConstants.java - utility class");
     }
@@ -21,9 +23,14 @@ public class UserConstants {
         public static final String DOMAIN_INVALID_FORMAT_MESSAGE = "Invalid Email value format";
 
         private static final String TEMPLATE_DOMAIN_INVALID_LENGTH = "Invalid Email value length: %d (max allowed: %d)";
+        private static final String TEMPLATE_ALREADY_EXISTS = "User with email=%s already exists";
 
         public static final String domainInvalidLengthMessage(final int actualLength) {
             return String.format(TEMPLATE_DOMAIN_INVALID_LENGTH, actualLength, MAX_LENGTH);
+        }
+
+        public static final String alreadyExistsMessage(final String email) {
+            return String.format(TEMPLATE_ALREADY_EXISTS, email);
         }
 
     }

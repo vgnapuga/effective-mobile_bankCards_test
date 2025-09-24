@@ -6,12 +6,14 @@ import java.math.BigDecimal;
 
 public class CardConstants {
 
-    private CardConstants() {
-        throw new UnsupportedOperationException("CardConstants.java - utility class");
-    }
+    public static final String DTO_REQUIRED_MESSAGE = "Card is required";
 
     public static final String DTO_REQUIRED_ID_MESSAGE = "Card ID is required";
     public static final String DTO_NEGATIVE_ID_MESSAGE = "Card ID cannot be negative";
+
+    private CardConstants() {
+        throw new UnsupportedOperationException("CardConstants.java - utility class");
+    }
 
     public static final class CardOwner {
 
