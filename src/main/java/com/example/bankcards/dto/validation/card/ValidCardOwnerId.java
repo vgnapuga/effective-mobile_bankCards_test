@@ -1,4 +1,4 @@
-package com.example.bankcards.dto.validation;
+package com.example.bankcards.dto.validation.card;
 
 
 import java.lang.annotation.ElementType;
@@ -8,13 +8,13 @@ import java.lang.annotation.Target;
 
 import com.example.bankcards.util.constant.CardConstants;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@NotNull(message = CardConstants.CardExpiryDate.DTO_REQUIRED_MESSAGE)
-@FutureOrPresent(message = CardConstants.CardExpiryDate.DTO_PAST_DATE_MESSAGE)
-public @interface ValidCardExpiryDate {
+@NotNull(message = CardConstants.CardOwner.DTO_REQUIRED_MESSAGE)
+@Positive(message = CardConstants.CardOwner.DTO_NEGATIVE_ID_MESSAGE)
+public @interface ValidCardOwnerId {
 }

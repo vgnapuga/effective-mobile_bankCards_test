@@ -1,4 +1,4 @@
-package com.example.bankcards.dto.validation;
+package com.example.bankcards.dto.validation.card;
 
 
 import java.lang.annotation.ElementType;
