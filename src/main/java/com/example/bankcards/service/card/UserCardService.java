@@ -30,7 +30,7 @@ public class UserCardService extends BaseService {
 
     // ---------- Helper methods ---------- //
 
-    private final Card findCardByIdForOwner(final Long cardId, final User owner) {
+    public final Card findCardByIdForOwner(final Long cardId, final User owner) {
         Card card = cardRepository.findById(cardId).orElseThrow(
                 () -> new ResourceNotFoundException(String.format("Card with id=%d was not found", cardId)));
 

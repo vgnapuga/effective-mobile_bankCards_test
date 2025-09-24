@@ -15,6 +15,7 @@ import com.example.bankcards.model.card.converter.CardExpiryDateConverter;
 import com.example.bankcards.model.card.vo.CardBalance;
 import com.example.bankcards.model.card.vo.CardExpiryDate;
 import com.example.bankcards.model.card.vo.CardNumber;
+import com.example.bankcards.model.transfer.vo.Amount;
 import com.example.bankcards.model.user.User;
 import com.example.bankcards.security.CardEncryption;
 
@@ -101,29 +102,23 @@ public class Card extends BaseEntity {
         this.status = newStatus;
     }
 
-    public final void addBalance(final BigDecimal valueToAdd) {
-        validateBigDecimal(valueToAdd, "add");
+    public final void addBalance(final Amount amount) {
+        if (amount == null)
+            throw new DomainValidationException(generateNullMessageFor("amount"));
 
-        BigDecimal newBalance = this.balance.getValue().add(valueToAdd);
+        BigDecimal newBalance = this.balance.getValue().add(amount.getValue());
         this.balance = new CardBalance(newBalance);
     }
 
-    public final void subtractBalance(final BigDecimal valueToSubtract) {
-        validateBigDecimal(valueToSubtract, "subtract");
+    public final void subtractBalance(final Amount amount) {
+        if (amount == null)
+            throw new DomainValidationException(generateNullMessageFor("amount"));
 
-        BigDecimal newBalance = this.balance.getValue().subtract(valueToSubtract);
-        if (newBalance.compareTo(BigDecimal.ZERO) <= 0)
+        BigDecimal newBalance = this.balance.getValue().subtract(amount.getValue());
+        if (newBalance.compareTo(BigDecimal.ZERO) < 0)
             throw new BusinessRuleViolationException("Insufficient funds");
 
         this.balance = new CardBalance(newBalance);
-    }
-
-    private static final void validateBigDecimal(final BigDecimal value, final String operationName) {
-        if (value == null)
-            throw new DomainValidationException(String.format("Value to %s card balance is <null>", operationName));
-
-        if (value.compareTo(BigDecimal.ZERO) < 0)
-            throw new BusinessRuleViolationException(String.format("Value to %s must be positive", operationName));
     }
 
     public final boolean isActive() {
