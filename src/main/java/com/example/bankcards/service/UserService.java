@@ -75,11 +75,9 @@ public class UserService extends BaseService {
         Password password = new Password(hashedPassword);
 
         Role userRole = roleService.getUserRole();
-
         User user = new User(email, password, userRole);
-        User savedUser = userRepository.save(user);
 
-        return savedUser;
+        return userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
@@ -110,11 +108,9 @@ public class UserService extends BaseService {
         checkEmailUniqueness(newEmail);
 
         User user = findUserById(userId);
-
         user.changeEmail(newEmail);
-        userRepository.save(user);
 
-        return user;
+        return userRepository.save(user);
     }
 
     @Transactional
@@ -128,11 +124,9 @@ public class UserService extends BaseService {
         Password newPassword = new Password(hashedNewPassword);
 
         User user = findUserById(userId);
-
         user.changePassword(newPassword);
-        userRepository.save(user);
 
-        return user;
+        return userRepository.save(user);
     }
 
     @Transactional

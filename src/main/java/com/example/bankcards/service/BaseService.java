@@ -27,8 +27,8 @@ public abstract class BaseService {
         if (pageable == null)
             throw new BusinessRuleViolationException("Pageable is required");
 
-        int size = pageable.getPageSize();
         int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
 
         if (page < 0)
             throw new BusinessRuleViolationException(String.format(TEMPLATE_NEGATIVE_PAGE_MESSAGE, page));
