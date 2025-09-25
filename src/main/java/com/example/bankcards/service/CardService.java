@@ -8,8 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.bankcards.dto.card.request.CardActivateRequest;
-import com.example.bankcards.dto.card.request.CardBlockRequest;
 import com.example.bankcards.dto.card.request.CardCreateRequest;
 import com.example.bankcards.exception.AccessDeniedException;
 import com.example.bankcards.exception.BusinessRuleViolationException;
@@ -136,14 +134,11 @@ public class CardService extends BaseService {
     }
 
     @Transactional
-    public final Card activateCardById(final Long adminId, final CardActivateRequest request) {
-        Long cardId = request.cardId();
-
+    public final Card activateCardById(final Long adminId, final Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
         userService.checkAdminPermissionTo("activate card", adminId);
-
         Card card = findCardByIdForAdmin(cardId);
 
         checkExpiryDate(card);
@@ -156,14 +151,11 @@ public class CardService extends BaseService {
     }
 
     @Transactional
-    public final Card blockCardById(final Long adminId, final CardBlockRequest request) {
-        Long cardId = request.cardId();
-
+    public final Card blockCardById(final Long adminId, final Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
         userService.checkAdminPermissionTo("block card", adminId);
-
         Card card = findCardByIdForAdmin(cardId);
 
         checkExpiryDate(card);

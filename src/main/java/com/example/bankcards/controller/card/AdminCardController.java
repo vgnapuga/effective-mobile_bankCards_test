@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -79,11 +80,35 @@ public final class AdminCardController extends BaseController {
     }
 
     @DeleteMapping("/{cardId}")
-    public ResponseEntity<Void> deleteCard(@PathVariable final Long cardId, Authentication authentication) {
+    public ResponseEntity<Void> deleteCard(@PathVariable final Long cardId, final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
         cardService.deleteCardById(adminId, cardId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/activate/{cardId}")
+    public ResponseEntity<CardResponse> activateCard(
+            @PathVariable final Long cardId,
+            final Authentication authentication) {
+        Long adminId = getCurrentUserId(authentication);
+
+        Card activeCard = cardService.activateCardById(adminId, cardId);
+        CardResponse response = CardResponse.of(activeCard);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/block/{cardId}")
+    public ResponseEntity<CardResponse> blockCard(
+            @PathVariable final Long cardId,
+            final Authentication authentication) {
+        Long adminId = getCurrentUserId(authentication);
+
+        Card blockedCard = cardService.blockCardById(adminId, cardId);
+        CardResponse response = CardResponse.of(blockedCard);
+
+        return ResponseEntity.ok(response);
     }
 
 }
