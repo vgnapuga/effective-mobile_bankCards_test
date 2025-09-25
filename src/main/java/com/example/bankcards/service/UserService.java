@@ -58,6 +58,11 @@ public class UserService extends BaseService {
                 () -> new ResourceNotFoundException(String.format("User with id=%d not found", userId)));
     }
 
+    public User findUserByEmail(final String email) {
+        return userRepository.findByEmail(new Email(email)).orElseThrow(
+                () -> new ResourceNotFoundException(String.format("User with Email=%s not found", email)));
+    }
+
     // ------------------------------------ //
 
     @Transactional
