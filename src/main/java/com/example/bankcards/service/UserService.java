@@ -106,7 +106,7 @@ public class UserService extends BaseService {
     }
 
     @Transactional
-    public final User updateUserEmail(final long userId, final UserUpdateEmailRequest request) {
+    public final User updateUserEmail(final Long userId, final UserUpdateEmailRequest request) {
         validateId(userId);
 
         Email newEmail = new Email(request.email());

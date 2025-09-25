@@ -12,7 +12,6 @@ import com.example.bankcards.model.transfer.Transfer;
 import com.example.bankcards.model.transfer.vo.Amount;
 import com.example.bankcards.model.user.User;
 import com.example.bankcards.repository.TransferRepository;
-import com.example.bankcards.service.card.UserCardService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,7 @@ public class TransferService extends BaseService {
 
     private TransferRepository transferRepository;
     private UserService userService;
-    private UserCardService userCardService;
+    private CardService cardService;
 
     @Transactional
     public final Transfer transferBetweenOwnCards(final Long ownerId, final TransferRequest request) {
@@ -39,8 +38,8 @@ public class TransferService extends BaseService {
         validateId(toCardId);
 
         User owner = userService.findUserById(ownerId);
-        Card fromCard = userCardService.findCardByIdForOwner(fromCardId, owner);
-        Card toCard = userCardService.findCardByIdForOwner(toCardId, owner);
+        Card fromCard = cardService.findCardByIdForOwner(fromCardId, owner);
+        Card toCard = cardService.findCardByIdForOwner(toCardId, owner);
 
         fromCard.subtractBalance(amount);
         toCard.addBalance(amount);
