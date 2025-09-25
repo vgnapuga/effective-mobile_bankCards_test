@@ -33,12 +33,12 @@ public class User extends BaseEntity {
     @Convert(converter = EmailConverter.class)
     private Email email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password_hashed", nullable = false)
     @Convert(converter = PasswordConverter.class)
     private Password password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
     public User() {
