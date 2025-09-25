@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.bankcards.dto.transfer.request.TransferRequest;
 import com.example.bankcards.exception.AccessDeniedException;
+import com.example.bankcards.exception.BusinessRuleViolationException;
 import com.example.bankcards.exception.ResourceNotFoundException;
 import com.example.bankcards.model.card.Card;
 import com.example.bankcards.model.transfer.Transfer;
@@ -61,6 +62,12 @@ public class TransferService extends BaseService {
         User owner = userService.findUserById(ownerId);
         Card fromCard = cardService.findCardByIdForOwner(fromCardId, owner);
         Card toCard = cardService.findCardByIdForOwner(toCardId, owner);
+
+        if (fromCard.equals(toCard))
+            throw new BusinessRuleViolationException("Cannot transfer to the same card");
+
+        if (!fromCard.isActive() || !toCard.isActive())
+            throw new BusinessRuleViolationException("Both cards for transfer must be ACTIVE");
 
         fromCard.subtractBalance(amount);
         toCard.addBalance(amount);
