@@ -51,7 +51,7 @@ public final class AdminCardController extends BaseController {
     public ResponseEntity<CardResponse> getCard(@PathVariable final Long cardId, final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
 
-        Card retrievedCard = cardService.getCardById(adminId, cardId);
+        Card retrievedCard = cardService.getCardByIdForOwner(adminId, cardId);
         CardResponse response = CardResponse.of(retrievedCard);
 
         return ResponseEntity.ok(response);
@@ -60,7 +60,7 @@ public final class AdminCardController extends BaseController {
     @GetMapping
     public ResponseEntity<CardListResponse> getAllCards(
             @RequestParam(defaultValue = "0") final int page,
-            @RequestParam(defaultValue = "0") final int size,
+            @RequestParam(defaultValue = "10") final int size,
             @RequestParam(defaultValue = "id") final String sortBy,
             @RequestParam(defaultValue = "acs") final String sortDirection,
             final Authentication authentication) {
@@ -68,10 +68,10 @@ public final class AdminCardController extends BaseController {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Card> userPage = cardService.getAllCards(adminId, pageable);
+        Page<Card> cardPage = cardService.getAllCardsForAdmin(adminId, pageable);
         CardListResponse response = new CardListResponse(
-                userPage.getContent().stream().map(CardResponse::of).toList(),
-                userPage.getTotalElements(),
+                cardPage.getContent().stream().map(CardResponse::of).toList(),
+                cardPage.getTotalElements(),
                 page,
                 size);
 

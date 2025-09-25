@@ -50,10 +50,10 @@ public final class UserCardController extends BaseController {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Card> userPage = cardService.getAllCardsForOwner(ownerId, pageable);
+        Page<Card> cardPage = cardService.getAllCardsForOwner(ownerId, pageable);
         CardListResponse response = new CardListResponse(
-                userPage.getContent().stream().map(CardResponse::of).toList(),
-                userPage.getTotalElements(),
+                cardPage.getContent().stream().map(CardResponse::of).toList(),
+                cardPage.getTotalElements(),
                 page,
                 size);
 

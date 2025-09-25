@@ -82,7 +82,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Card getCardById(final Long adminId, final Long cardId) {
+    public final Card getCardByIdForAdmin(final Long adminId, final Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
@@ -92,7 +92,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Page<Card> getAllCards(final Long adminId, final Pageable pageable) {
+    public final Page<Card> getAllCardsForAdmin(final Long adminId, final Pageable pageable) {
         validatePagination(pageable);
 
         validateId(adminId);
