@@ -11,7 +11,7 @@ public class CardEncryptionException extends RuntimeException {
         super(message, cause);
     }
 
-    public static class InvalidKeyException extends CardEncryptionException {
+    public static final class InvalidKeyException extends CardEncryptionException {
 
         public InvalidKeyException(final String message) {
             super(message);
@@ -19,7 +19,7 @@ public class CardEncryptionException extends RuntimeException {
 
     }
 
-    public static class EncryptionFailedException extends CardEncryptionException {
+    public static final class EncryptionFailedException extends CardEncryptionException {
 
         public EncryptionFailedException(final String message) {
             super(message);
@@ -31,7 +31,7 @@ public class CardEncryptionException extends RuntimeException {
 
     }
 
-    public static class DecryptionFailedException extends CardEncryptionException {
+    public static final class DecryptionFailedException extends CardEncryptionException {
 
         public DecryptionFailedException(final String message) {
             super(message);
@@ -43,7 +43,7 @@ public class CardEncryptionException extends RuntimeException {
 
     }
 
-    public static class InvalidFormatException extends CardEncryptionException {
+    public static final class InvalidFormatException extends CardEncryptionException {
 
         public InvalidFormatException(final String message) {
             super(message);
