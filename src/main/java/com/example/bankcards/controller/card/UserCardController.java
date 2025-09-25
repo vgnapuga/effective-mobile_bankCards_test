@@ -44,7 +44,7 @@ public final class UserCardController extends BaseController {
             @RequestParam(defaultValue = "0") final int page,
             @RequestParam(defaultValue = "10") final int size,
             @RequestParam(defaultValue = "id") final String sortBy,
-            @RequestParam(defaultValue = "acs") final String sortDirection,
+            @RequestParam(defaultValue = "asc") final String sortDirection,
             final Authentication authentication) {
         Long ownerId = getCurrentUserId(authentication);
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);

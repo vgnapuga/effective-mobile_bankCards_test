@@ -35,9 +35,9 @@ public class TransferService extends BaseService {
                 () -> new ResourceNotFoundException(String.format("Transfer with id=%d not found", transferId)));
     }
 
-    private final Transfer findCardByIdForOwner(final Long transferId, final User owner) {
+    private final Transfer findTransferByIdForOwner(final Long transferId, final User owner) {
         Transfer transfer = transferRepository.findById(transferId).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("Card with id=%d was not found", transferId)));
+                () -> new ResourceNotFoundException(String.format("Transfer with id=%d was not found", transferId)));
 
         if (!transfer.getOwner().equals(owner))
             throw new AccessDeniedException(String.format("Permission to access card denied for id=%d", owner.getId()));
@@ -75,14 +75,16 @@ public class TransferService extends BaseService {
         validateId(adminId);
         validateId(transferId);
 
-        userService.checkAdminPermissionTo("get card", adminId);
+        userService.checkAdminPermissionTo("get transfer", adminId);
         return findTransferByIdForAdmin(transferId);
     }
 
     @Transactional(readOnly = true)
     public final Page<Transfer> getAllTransfersForAdmin(final Long adminId, final Pageable pageable) {
+        validatePagination(pageable);
+
         validateId(adminId);
-        userService.checkAdminPermissionTo("get all cards", adminId);
+        userService.checkAdminPermissionTo("get all transfers", adminId);
 
         return transferRepository.findAll(pageable);
     }
@@ -93,7 +95,7 @@ public class TransferService extends BaseService {
         validateId(transferId);
 
         User owner = userService.findUserById(ownerId);
-        Transfer transfer = findCardByIdForOwner(transferId, owner);
+        Transfer transfer = findTransferByIdForOwner(transferId, owner);
 
         return transfer;
     }

@@ -51,7 +51,7 @@ public final class AdminCardController extends BaseController {
     public ResponseEntity<CardResponse> getCard(@PathVariable final Long cardId, final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
 
-        Card retrievedCard = cardService.getCardByIdForOwner(adminId, cardId);
+        Card retrievedCard = cardService.getCardByIdForAdmin(adminId, cardId);
         CardResponse response = CardResponse.of(retrievedCard);
 
         return ResponseEntity.ok(response);
@@ -62,7 +62,7 @@ public final class AdminCardController extends BaseController {
             @RequestParam(defaultValue = "0") final int page,
             @RequestParam(defaultValue = "10") final int size,
             @RequestParam(defaultValue = "id") final String sortBy,
-            @RequestParam(defaultValue = "acs") final String sortDirection,
+            @RequestParam(defaultValue = "asc") final String sortDirection,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
