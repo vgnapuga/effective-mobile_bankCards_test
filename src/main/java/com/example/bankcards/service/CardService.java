@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.bankcards.dto.card.request.CardActivateRequest;
 import com.example.bankcards.dto.card.request.CardBlockRequest;
 import com.example.bankcards.dto.card.request.CardCreateRequest;
-import com.example.bankcards.dto.card.request.CardDeleteRequest;
-import com.example.bankcards.dto.card.request.CardGetRequest;
 import com.example.bankcards.exception.AccessDeniedException;
 import com.example.bankcards.exception.BusinessRuleViolationException;
 import com.example.bankcards.exception.ResourceNotFoundException;
@@ -84,9 +82,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Card getCardById(final Long adminId, final CardGetRequest request) {
-        Long cardId = request.cardId();
-
+    public final Card getCardById(final Long adminId, final Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
@@ -106,9 +102,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Card getCardByIdForOwner(final Long ownerId, final CardGetRequest request) {
-        Long cardId = request.cardId();
-
+    public final Card getCardByIdForOwner(final Long ownerId, final Long cardId) {
         validateId(ownerId);
         validateId(cardId);
 
@@ -131,9 +125,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional
-    public final void deleteCardById(final Long adminId, final CardDeleteRequest request) {
-        Long cardId = request.cardId();
-
+    public final void deleteCardById(final Long adminId, final Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
