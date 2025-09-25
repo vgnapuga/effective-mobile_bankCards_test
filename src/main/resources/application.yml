@@ -1,6 +1,3 @@
-#
-# application.yml — главный конфигурационный файл Spring Boot.
-
 Что нужно сделать:
   - Указать настройки подключения к базе данных.
   - Указать порт приложения.
@@ -11,3 +8,7 @@ app:
   security:
     # Тестовый ключ только для демонстрации! В production использовать переменные окружения
     card-encryption-key: ${CARD_ENCRYPTION_KEY:dGVzdC1rZXktMjU2LWJpdC1mb3ItZGV2ZWxvcG1lbnQhISE=}
+  jwt:
+    # Base64 encoded 256-bit key для тестирования
+    secret: ${JWT_SECRET:dGVzdEp3dFNlY3JldEtleUZvckJhbmtDYXJkc0FwcGxpY2F0aW9uMTIzNDU2Nzg5MA==}
+    expiration: ${JWT_EXPIRATION:3600000}
