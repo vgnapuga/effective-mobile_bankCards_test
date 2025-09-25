@@ -33,7 +33,7 @@ public final class JwtTokenProvider {
     private String jwtSecret;
 
     @Value("${app.jwt.expiration}")
-    private int jwtExpirationMs;
+    private long jwtExpirationMs;
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
@@ -86,13 +86,17 @@ public final class JwtTokenProvider {
 
     }
 
-    public Long getUserIdFromToken(String token) {
+    public Long getUserIdFromToken(final String token) {
         try {
             return this.generateClaims(token).get("userId", Long.class);
         } catch (Exception e) {
             log.error("Error extracting user ID from token: {}", e.getMessage());
             return null;
         }
+    }
+
+    public long getExpirationTime(final String token) {
+        return jwtExpirationMs;
     }
 
 }
