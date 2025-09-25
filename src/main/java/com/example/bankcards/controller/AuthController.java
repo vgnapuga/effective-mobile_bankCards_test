@@ -35,7 +35,7 @@ public class AuthController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String jwt = tokenProvider.generateToken(userDetails);
 
-        return ResponseEntity.ok(new LoginResponse(jwt, userDetails.getUserId(), tokenProvider.getExpirationTime(jwt)));
+        return ResponseEntity.ok(LoginResponse.of(jwt, userDetails.getUserId(), tokenProvider.getExpirationTime(jwt)));
     }
 
 }
