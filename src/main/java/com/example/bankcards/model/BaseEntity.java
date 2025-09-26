@@ -41,15 +41,15 @@ public abstract class BaseEntity {
         return String.format("%s %s is <null>", this.getClass().getSimpleName(), attributeName.toLowerCase());
     }
 
-    public final Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public final LocalDateTime getCreationTime() {
+    public LocalDateTime getCreationTime() {
         return this.createdAt;
     }
 
-    public final LocalDateTime getUpdateTime() {
+    public LocalDateTime getUpdateTime() {
         return this.updatedAt;
     }
 

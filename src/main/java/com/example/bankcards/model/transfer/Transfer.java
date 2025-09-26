@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "transfers")
-public final class Transfer extends BaseEntity {
+public class Transfer extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false, updatable = false)

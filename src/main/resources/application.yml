@@ -1,14 +1,51 @@
-Что нужно сделать:
-  - Указать настройки подключения к базе данных.
-  - Указать порт приложения.
-  - Настроить параметры безопасности и JWT.
-  - Включить Swagger UI.
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: bankcards-api
+  
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/bankcards}
+    username: ${SPRING_DATASOURCE_USERNAME:bankcards_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:bankcards_pass}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO:create-drop}
+    show-sql: ${JPA_SHOW_SQL:true}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  liquibase:
+    enabled: false
 
 app:
   security:
-    # Тестовый ключ только для демонстрации! В production использовать переменные окружения
     card-encryption-key: ${CARD_ENCRYPTION_KEY:dGVzdC1rZXktMjU2LWJpdC1mb3ItZGV2ZWxvcG1lbnQhISE=}
   jwt:
-    # Base64 encoded 256-bit key для тестирования
     secret: ${JWT_SECRET:dGVzdEp3dFNlY3JldEtleUZvckJhbmtDYXJkc0FwcGxpY2F0aW9uMTIzNDU2Nzg5MA==}
     expiration: ${JWT_EXPIRATION:3600000}
+
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}
+    path: /api-docs
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:true}
+    path: /swagger-ui.html
+    url: /docs/openapi.yaml
+    try-it-out-enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  level:
+    com.example.bankcards: DEBUG
+    org.springframework.security: INFO

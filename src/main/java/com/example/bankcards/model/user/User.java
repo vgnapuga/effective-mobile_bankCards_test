@@ -116,20 +116,20 @@ public class User extends BaseEntity {
         this.roles.remove(roleToRemove);
     }
 
-    public final Email getEmail() {
+    public Email getEmail() {
         return this.email;
     }
 
-    public final Password getPassword() {
+    public Password getPassword() {
         return this.password;
     }
 
-    public final Set<Role> getRoles() {
+    public Set<Role> getRoles() {
         return new HashSet<>(this.roles);
     }
 
     @Override
-    public final String toString() {
+    public String toString() {
         return String.format(
                 "User{id=%d, email=%s, password=***, roles=%s}",
                 this.id,

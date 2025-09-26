@@ -145,19 +145,19 @@ public class Card extends BaseEntity {
         return this.last4;
     }
 
-    public final User getOwner() {
+    public User getOwner() {
         return this.owner;
     }
 
-    public final CardExpiryDate getExpiryDate() {
+    public CardExpiryDate getExpiryDate() {
         return this.expiryDate;
     }
 
-    public final CardStatus getStatus() {
+    public CardStatus getStatus() {
         return this.status;
     }
 
-    public final CardBalance getBalance() {
+    public CardBalance getBalance() {
         return this.balance;
     }
 

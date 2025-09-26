@@ -19,16 +19,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.example.bankcards.security.CardEncryption;
 import com.example.bankcards.security.jwt.JwtAuthenticationFilter;
 
-import lombok.RequiredArgsConstructor;
-
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
-public final class SecurityConfig {
-
-    private final JwtAuthenticationFilter jwtAuthFilter;
+public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
@@ -36,7 +31,8 @@ public final class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity http, final JwtAuthenticationFilter jwtAuthFilter)
+            throws Exception {
         http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
                 auth -> auth.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
