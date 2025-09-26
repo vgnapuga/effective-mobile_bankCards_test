@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import com.example.bankcards.exception.AccessDeniedException;
 import com.example.bankcards.exception.BusinessRuleViolationException;
 import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.exception.ResourceNotFoundException;
+import com.example.bankcards.model.BaseEntity;
 import com.example.bankcards.model.card.Card;
 import com.example.bankcards.model.card.CardStatus;
 import com.example.bankcards.model.card.vo.CardBalance;
@@ -82,27 +84,52 @@ class CardServiceTest {
 
     // ---------- Helper methods ---------- //
 
-    private User createTestUser() {
+    private void setId(Object entity, Long id) {
+        try {
+            Field idField = BaseEntity.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(entity, id);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setCardOwner(Card card, User owner) {
+        try {
+            Field idField = Card.class.getDeclaredField("owner");
+            idField.setAccessible(true);
+            idField.set(card, owner);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private User createTestUser(Long id) {
         Role userRole = new Role(RoleName.USER);
-        return new User(new Email(TEST_EMAIL), new Password(TEST_HASHED_PASSWORD), userRole);
+        User user = new User(new Email(TEST_EMAIL), new Password(TEST_HASHED_PASSWORD), userRole);
+        setId(user, id);
+
+        return user;
     }
 
     private Card createTestCard() {
-        User owner = createTestUser();
+        User owner = createTestUser(TEST_USER_ID);
+
         CardNumber cardNumber = new CardNumber(TEST_CARD_NUMBER);
         CardExpiryDate expiryDate = CardExpiryDate.of(2025, 12);
         CardBalance balance = new CardBalance(BigDecimal.valueOf(100.00));
 
-        return Card.of(cardNumber, owner, expiryDate, CardStatus.ACTIVE, balance, cardEncryption);
+        whenEncrypt();
+        Card card = Card.of(cardNumber, owner, expiryDate, CardStatus.ACTIVE, balance, cardEncryption);
+        setCardOwner(card, owner);
+
+        return card;
     }
 
     private Card createExpiredCard() {
-        User owner = createTestUser();
-        CardNumber cardNumber = new CardNumber(TEST_CARD_NUMBER);
-        CardExpiryDate expiryDate = CardExpiryDate.of(2020, 1);
-        CardBalance balance = new CardBalance(BigDecimal.valueOf(100.00));
+        Card card = createTestCard();
+        card.changeStatus(CardStatus.EXPIRED);
 
-        Card card = Card.of(cardNumber, owner, expiryDate, CardStatus.EXPIRED, balance, cardEncryption);
         return card;
     }
 
@@ -140,15 +167,15 @@ class CardServiceTest {
         @Test
         @Override
         public void shouldReturnEntity_whenValidRequest() {
-            User testUser = createTestUser();
+            User testUser = createTestUser(TEST_USER_ID);
             LocalDate futureDate = LocalDate.now().plusYears(2);
 
             whenFindUserById(testUser);
-            whenEncrypt();
             whenSave();
 
             CardCreateRequest request = new CardCreateRequest(TEST_CARD_NUMBER, TEST_USER_ID, futureDate);
 
+            whenEncrypt();
             Card result = cardService.createCard(TEST_ADMIN_ID, request);
 
             assertNotNull(result);
@@ -240,6 +267,7 @@ class CardServiceTest {
             assertEquals("Entity id is <null>", exception.getMessage());
             verifyNoInteractions(userService, cardEncryption, cardRepository);
         }
+
     }
 
     @Nested
@@ -248,7 +276,6 @@ class CardServiceTest {
         @Test
         @Override
         public void shouldReturnEntity_whenValidRequest() {
-            whenEncrypt();
             Card testCard = createTestCard();
 
             whenFindCardById(Optional.of(testCard));
@@ -339,6 +366,7 @@ class CardServiceTest {
             verify(cardRepository).findById(TEST_CARD_ID);
             verifyNoMoreInteractions(userService, cardRepository);
         }
+
     }
 
     @Nested
@@ -347,9 +375,8 @@ class CardServiceTest {
         @Test
         @Override
         public void shouldReturnEntity_whenValidRequest() {
-            whenEncrypt();
+            User testOwner = createTestUser(TEST_USER_ID);
             Card testCard = createTestCard();
-            User testOwner = testCard.getOwner();
 
             whenFindUserById(testOwner);
             whenFindCardById(Optional.of(testCard));
@@ -413,7 +440,7 @@ class CardServiceTest {
         @Test
         @Override
         public void shouldThrowException_whenEntityNotFound() {
-            User testOwner = createTestUser();
+            User testOwner = createTestUser(TEST_USER_ID);
             whenFindUserById(testOwner);
             whenFindCardById(Optional.empty());
 
@@ -434,7 +461,6 @@ class CardServiceTest {
                     new Password(TEST_HASHED_PASSWORD),
                     new Role(RoleName.USER));
 
-            whenEncrypt();
             Card testCard = createTestCard();
             whenFindUserById(differentUser);
             whenFindCardById(Optional.of(testCard));
@@ -448,6 +474,7 @@ class CardServiceTest {
             verify(cardRepository).findById(TEST_CARD_ID);
             verifyNoMoreInteractions(userService, cardRepository);
         }
+
     }
 
     @Nested
@@ -456,7 +483,6 @@ class CardServiceTest {
         @Test
         @Override
         public void shouldNotThrowException_whenValidRequest() {
-            whenEncrypt();
             Card testCard = createTestCard();
 
             whenFindCardById(Optional.of(testCard));
@@ -545,6 +571,7 @@ class CardServiceTest {
             verify(cardRepository).findById(TEST_CARD_ID);
             verifyNoMoreInteractions(userService, cardRepository);
         }
+
     }
 
     @Nested
@@ -553,7 +580,6 @@ class CardServiceTest {
         @Test
         @Override
         public void shouldReturnEntity_whenValidRequest() {
-            whenEncrypt();
             Card testCard = createTestCard();
             testCard.changeStatus(CardStatus.PENDING_ACTIVATION);
 
@@ -650,7 +676,6 @@ class CardServiceTest {
 
         @Test
         void shouldThrowException_whenCardExpired() {
-            whenEncrypt();
             Card expiredCard = createExpiredCard();
 
             whenFindCardById(Optional.of(expiredCard));
@@ -667,7 +692,6 @@ class CardServiceTest {
 
         @Test
         void shouldThrowException_whenCardAlreadyActive() {
-            whenEncrypt();
             Card activeCard = createTestCard();
 
             whenFindCardById(Optional.of(activeCard));
@@ -681,6 +705,7 @@ class CardServiceTest {
             verify(cardRepository).findById(TEST_CARD_ID);
             verifyNoMoreInteractions(userService, cardRepository);
         }
+
     }
 
     @Nested
@@ -689,7 +714,6 @@ class CardServiceTest {
         @Test
         @Override
         public void shouldReturnEntity_whenValidRequest() {
-            whenEncrypt();
             Card testCard = createTestCard();
 
             whenFindCardById(Optional.of(testCard));
@@ -785,7 +809,6 @@ class CardServiceTest {
 
         @Test
         void shouldThrowException_whenCardExpired() {
-            whenEncrypt();
             Card expiredCard = createExpiredCard();
 
             whenFindCardById(Optional.of(expiredCard));
@@ -802,7 +825,6 @@ class CardServiceTest {
 
         @Test
         void shouldThrowException_whenCardAlreadyBlocked() {
-            whenEncrypt();
             Card blockedCard = createTestCard();
             blockedCard.changeStatus(CardStatus.BLOCKED);
 
@@ -817,6 +839,7 @@ class CardServiceTest {
             verify(cardRepository).findById(TEST_CARD_ID);
             verifyNoMoreInteractions(userService, cardRepository);
         }
+
     }
 
     @Nested
@@ -861,6 +884,7 @@ class CardServiceTest {
             verifyNoMoreInteractions(userService);
             verifyNoInteractions(cardRepository);
         }
+
     }
 
     @Nested
@@ -868,7 +892,7 @@ class CardServiceTest {
 
         @Test
         void shouldReturnCardPage_whenValidRequest() {
-            User testOwner = createTestUser();
+            User testOwner = createTestUser(TEST_USER_ID);
             Pageable pageable = PageRequest.of(0, 10);
             Page<Card> cardPage = new PageImpl<>(new ArrayList<>());
 
@@ -907,5 +931,7 @@ class CardServiceTest {
             verifyNoMoreInteractions(userService);
             verifyNoInteractions(cardRepository);
         }
+
     }
+
 }
