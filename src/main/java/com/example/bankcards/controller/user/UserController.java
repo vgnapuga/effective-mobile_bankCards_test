@@ -3,6 +3,7 @@ package com.example.bankcards.controller.user;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,16 @@ import lombok.RequiredArgsConstructor;
 public final class UserController extends BaseController {
 
     private final UserService userService;
+
+    @GetMapping
+    public ResponseEntity<UserResponse> getProfile(final Authentication authentication) {
+        final Long userId = getCurrentUserId(authentication);
+
+        User retrievedUser = userService.getCurrentUserProfile(userId);
+        UserResponse response = UserResponse.of(retrievedUser);
+
+        return ResponseEntity.ok(response);
+    }
 
     @PutMapping("/email")
     public ResponseEntity<UserResponse> updateUserEmail(

@@ -86,12 +86,18 @@ public class UserService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final User getUserById(final Long adminId, final Long userId) {
+    public final User getUserByIdForAdmin(final Long adminId, final Long userId) {
         validateId(adminId);
         validateId(userId);
 
         checkAdminPermissionTo("get user", adminId);
 
+        return findUserById(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public final User getCurrentUserProfile(final Long userId) {
+        validateId(userId);
         return findUserById(userId);
     }
 

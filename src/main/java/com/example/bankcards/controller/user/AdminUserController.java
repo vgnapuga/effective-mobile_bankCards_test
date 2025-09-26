@@ -51,7 +51,7 @@ public final class AdminUserController extends BaseController {
     public ResponseEntity<UserResponse> getUser(@PathVariable final Long userId, final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
 
-        User retrievedUser = userService.getUserById(adminId, userId);
+        User retrievedUser = userService.getUserByIdForAdmin(adminId, userId);
         UserResponse response = UserResponse.of(retrievedUser);
 
         return ResponseEntity.ok(response);
