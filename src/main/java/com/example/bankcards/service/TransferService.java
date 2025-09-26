@@ -25,9 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TransferService extends BaseService {
 
-    private TransferRepository transferRepository;
-    private UserService userService;
-    private CardService cardService;
+    private final TransferRepository transferRepository;
+    private final UserService userService;
+    private final CardService cardService;
 
     // ---------- Helper methods ---------- //
 
