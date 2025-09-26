@@ -57,10 +57,16 @@ public abstract class BaseEntity {
     public final boolean equals(Object obj) {
         if (obj == this)
             return true;
+
         if (obj == null || obj.getClass() != this.getClass())
             return false;
 
-        return java.util.Objects.equals(this.id, ((BaseEntity) obj).id);
+        BaseEntity other = (BaseEntity) obj;
+
+        if (this.id == null || other.id == null)
+            return false;
+
+        return java.util.Objects.equals(this.id, other.id);
 
     }
 
