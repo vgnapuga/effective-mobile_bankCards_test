@@ -9,9 +9,9 @@ public interface DeleteBehaviorTest {
 
     void shouldThrowException_whenNullIdToDelete();
 
-    void shouldThrowException_whenInvalidRequesterId();
+    void shouldThrowException_whenInvalidRequesterId(Long id);
 
-    void shouldThrowException_whenInvalidIdToDelete();
+    void shouldThrowException_whenInvalidIdToDelete(Long id);
 
     void shouldThrowException_whenEntityNotFound();
 

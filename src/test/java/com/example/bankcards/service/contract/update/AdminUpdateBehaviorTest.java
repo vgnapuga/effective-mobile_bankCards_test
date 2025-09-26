@@ -7,6 +7,6 @@ public interface AdminUpdateBehaviorTest extends UpdateBehaviorTest {
 
     void shouldThrowException_whenNullIdToUpdate();
 
-    void shouldThrowException_whenInvalidIdToUpdate();
+    void shouldThrowException_whenInvalidIdToUpdate(Long id);
 
 }

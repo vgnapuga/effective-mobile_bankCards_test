@@ -7,6 +7,6 @@ public interface CreateBehaviorTest {
 
     void shouldThrowException_whenNullId();
 
-    void shouldThrowException_whenInvalidId();
+    void shouldThrowException_whenInvalidId(Long id);
 
 }

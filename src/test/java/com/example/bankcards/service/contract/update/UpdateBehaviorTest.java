@@ -7,7 +7,7 @@ public interface UpdateBehaviorTest {
 
     void shouldThrowException_whenNullRequesterId();
 
-    void shouldThrowException_whenInvalidRequesterId();
+    void shouldThrowException_whenInvalidRequesterId(Long id);
 
     void shouldThrowException_whenEntityNotFound();
 

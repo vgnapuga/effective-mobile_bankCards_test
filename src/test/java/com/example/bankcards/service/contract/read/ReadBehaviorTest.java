@@ -9,9 +9,9 @@ public interface ReadBehaviorTest {
 
     void shouldThrowException_whenNullIdToRead();
 
-    void shouldThrowException_whenInvalidRequesterId();
+    void shouldThrowException_whenInvalidRequesterId(Long id);
 
-    void shouldThrowException_whenInvalidIdToRead();
+    void shouldThrowException_whenInvalidIdToRead(Long id);
 
     void shouldThrowException_whenEntityNotFound();
 
