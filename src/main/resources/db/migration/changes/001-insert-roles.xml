@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <changeSet id="001-insert-roles" author="onenull">
+    <comment>Insert USER and ADMIN roles</comment>
+
+    <sql> INSERT INTO roles (name, created_at, updated_at) VALUES ('USER', NOW(), NOW()) ON CONFLICT
+      (name) DO NOTHING; INSERT INTO roles (name, created_at, updated_at) VALUES ('ADMIN', NOW(),
+      NOW()) ON CONFLICT (name) DO NOTHING; </sql>
+
+    <rollback> DELETE FROM roles WHERE name IN ('USER', 'ADMIN'); </rollback>
+  </changeSet>
+
+</databaseChangeLog>

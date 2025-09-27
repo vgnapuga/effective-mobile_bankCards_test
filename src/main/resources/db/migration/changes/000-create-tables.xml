@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <changeSet id="000-create-tables" author="onenull">
+    <comment>Create all tables</comment>
+
+    <!-- Create roles table -->
+    <createTable tableName="roles">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false" unique="true" />
+      </column>
+      <column name="created_at" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+      <column name="updated_at" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Create users table -->
+    <createTable tableName="users">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="email" type="VARCHAR(255)">
+        <constraints nullable="false" unique="true" />
+      </column>
+      <column name="password_hashed" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="created_at" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+      <column name="updated_at" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Create users_roles table -->
+    <createTable tableName="users_roles">
+      <column name="user_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+      <column name="role_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Create cards table -->
+    <createTable tableName="cards">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="card_number_encrypted" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="card_number_last4" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="owner_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+      <column name="expiry_date" type="DATE">
+        <constraints nullable="false" />
+      </column>
+      <column name="status" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
+      <column name="balance" type="DECIMAL(38,2)">
+        <constraints nullable="false" />
+      </column>
+      <column name="created_at" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+      <column name="updated_at" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Create transfers table -->
+    <createTable tableName="transfers">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false" />
+      </column>
+      <column name="owner_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+      <column name="from_card_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+      <column name="to_card_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+      <column name="amount" type="DECIMAL(38,2)">
+        <constraints nullable="false" />
+      </column>
+      <column name="created_at" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+      <column name="updated_at" type="TIMESTAMP">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Add constraints -->
+    <addPrimaryKey tableName="users_roles" columnNames="user_id,role_id" />
+
+    <addForeignKeyConstraint
+      baseTableName="users_roles" baseColumnNames="user_id"
+      referencedTableName="users" referencedColumnNames="id"
+      constraintName="fk_users_roles_user" />
+
+    <addForeignKeyConstraint
+      baseTableName="users_roles" baseColumnNames="role_id"
+      referencedTableName="roles" referencedColumnNames="id"
+      constraintName="fk_users_roles_role" />
+
+    <addForeignKeyConstraint
+      baseTableName="cards" baseColumnNames="owner_id"
+      referencedTableName="users" referencedColumnNames="id"
+      constraintName="fk_cards_owner"
+      onDelete="CASCADE" />
+
+    <addForeignKeyConstraint
+      baseTableName="transfers" baseColumnNames="owner_id"
+      referencedTableName="users" referencedColumnNames="id"
+      constraintName="fk_transfers_owner" />
+
+    <addForeignKeyConstraint
+      baseTableName="transfers" baseColumnNames="from_card_id"
+      referencedTableName="cards" referencedColumnNames="id"
+      constraintName="fk_transfers_from_card" />
+
+    <addForeignKeyConstraint
+      baseTableName="transfers" baseColumnNames="to_card_id"
+      referencedTableName="cards" referencedColumnNames="id"
+      constraintName="fk_transfers_to_card" />
+
+  </changeSet>
+
+</databaseChangeLog>
