@@ -7,5 +7,7 @@
   <include file="db/migration/changes/000-create-tables.xml" />
   <include file="db/migration/changes/001-insert-roles.xml" />
   <include file="db/migration/changes/002-insert-test-users.xml" />
+  <include file="db/migration/changes/003-insert-test-cards.xml" />
+  <include file="db/migration/changes/004-insert-test-transfers.xml" />
 
 </databaseChangeLog>

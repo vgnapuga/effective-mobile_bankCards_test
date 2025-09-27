@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <changeSet id="003-insert-test-cards" author="onenull">
+    <comment>Insert test cards for demonstration</comment>
+
+    <!-- Test cards for user@test.com -->
+    <sql> INSERT INTO cards (card_number_encrypted, card_number_last4, owner_id, expiry_date,
+      status, balance, created_at, updated_at) SELECT
+      'ZW5jcnlwdGVkQ2FyZE51bWJlcjEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2', -- Encrypted test card number
+      '1234', u.id, '2026-12-01', 'ACTIVE', 1500.00, NOW(), NOW() FROM users u WHERE u.email =
+      'user@test.com' ON CONFLICT DO NOTHING; </sql>
+
+    <sql> INSERT INTO cards (card_number_encrypted, card_number_last4, owner_id, expiry_date,
+      status, balance, created_at, updated_at) SELECT
+      'ZW5jcnlwdGVkQ2FyZE51bWJlcjk4NzY1NDMyMTA5ODc2NTQzMjEwOTg3NjU0', -- Encrypted test card number
+      '5678', u.id, '2025-06-01', 'ACTIVE', 750.50, NOW(), NOW() FROM users u WHERE u.email =
+      'user@test.com' ON CONFLICT DO NOTHING; </sql>
+
+    <sql> INSERT INTO cards (card_number_encrypted, card_number_last4, owner_id, expiry_date,
+      status, balance, created_at, updated_at) SELECT
+      'ZW5jcnlwdGVkQ2FyZE51bWJlcjU1NTU0NDQ0MzMzMzIyMjIxMTExMDAwMA==', -- Encrypted test card number
+      '9999', u.id, '2024-03-01', 'BLOCKED', 0.00, NOW(), NOW() FROM users u WHERE u.email =
+      'user@test.com' ON CONFLICT DO NOTHING; </sql>
+
+    <!-- Test cards for admin@test.com -->
+    <sql> INSERT INTO cards (card_number_encrypted, card_number_last4, owner_id, expiry_date,
+      status, balance, created_at, updated_at) SELECT
+      'ZW5jcnlwdGVkQ2FyZE51bWJlcjExMTEyMjIyMzMzMzQ0NDQ1NTU1NjY2Nw==', -- Encrypted test card number
+      '7777', u.id, '2027-01-01', 'ACTIVE', 5000.00, NOW(), NOW() FROM users u WHERE u.email =
+      'admin@test.com' ON CONFLICT DO NOTHING; </sql>
+
+    <sql> INSERT INTO cards (card_number_encrypted, card_number_last4, owner_id, expiry_date,
+      status, balance, created_at, updated_at) SELECT
+      'ZW5jcnlwdGVkQ2FyZE51bWJlcjg4ODg5OTk5MDAwMDExMTEyMjIyMzMzMw==', -- Encrypted test card number
+      '0000', u.id, '2025-12-01', 'PENDING_ACTIVATION', 0.00, NOW(), NOW() FROM users u WHERE
+      u.email = 'admin@test.com' ON CONFLICT DO NOTHING; </sql>
+
+  </changeSet>
+
+</databaseChangeLog>
