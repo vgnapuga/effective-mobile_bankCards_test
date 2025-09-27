@@ -24,12 +24,20 @@ public final class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
         log.debug("Loading user by email: {}", email);
-
         try {
             User user = userService.findUserByEmail(email);
-            return CustomUserDetails.of(user);
+            log.debug("Found user: {}, roles count: {}", user.getEmail(), user.getRoles().size());
+
+            CustomUserDetails userDetails = CustomUserDetails.of(user);
+            log.debug("Created UserDetails with {} authorities", userDetails.getAuthorities().size());
+
+            return userDetails;
         } catch (ResourceNotFoundException e) {
+            log.error("User not found: {}", email, e);
             throw new UsernameNotFoundException(String.format("User with email=%s not found", email));
+        } catch (Exception e) {
+            log.error("Error loading user: {}", email, e);
+            throw new UsernameNotFoundException("Error loading user", e);
         }
     }
 

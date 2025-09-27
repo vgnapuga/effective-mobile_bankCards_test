@@ -28,12 +28,12 @@ public class RoleService {
     }
 
     @Transactional(readOnly = true)
-    public final Role getUserRole() {
+    public Role getUserRole() {
         return findRoleByName(RoleName.USER);
     }
 
     @Transactional(readOnly = true)
-    public final Role getAdminRole() {
+    public Role getAdminRole() {
         return findRoleByName(RoleName.ADMIN);
     }
 

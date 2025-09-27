@@ -133,15 +133,15 @@ public class Card extends BaseEntity {
         return this.status.equals(CardStatus.EXPIRED);
     }
 
-    public final CardNumber getCardNumber() {
+    public CardNumber getCardNumber() {
         return this.cardNumber;
     }
 
-    public final String getEncryptedCardNumber() {
+    public String getEncryptedCardNumber() {
         return this.encryptedCardNumber;
     }
 
-    public final String getLast4() {
+    public String getLast4() {
         return this.last4;
     }
 

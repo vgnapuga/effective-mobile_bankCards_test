@@ -49,7 +49,7 @@ public class TransferService extends BaseService {
     // ------------------------------------ //
 
     @Transactional
-    public final Transfer transferBetweenOwnCards(final Long ownerId, final TransferRequest request) {
+    public Transfer transferBetweenOwnCards(final Long ownerId, final TransferRequest request) {
         validateId(ownerId);
 
         Long fromCardId = request.fromCardId();
@@ -78,7 +78,7 @@ public class TransferService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Transfer getTransferByIdForAdmin(final Long adminId, final Long transferId) {
+    public Transfer getTransferByIdForAdmin(final Long adminId, final Long transferId) {
         validateId(adminId);
         validateId(transferId);
 
@@ -87,7 +87,7 @@ public class TransferService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Page<Transfer> getAllTransfersForAdmin(final Long adminId, final Pageable pageable) {
+    public Page<Transfer> getAllTransfersForAdmin(final Long adminId, final Pageable pageable) {
         validatePagination(pageable);
 
         validateId(adminId);
@@ -97,7 +97,7 @@ public class TransferService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Transfer getTransferByIdForOwner(final Long ownerId, final Long transferId) {
+    public Transfer getTransferByIdForOwner(final Long ownerId, final Long transferId) {
         validateId(ownerId);
         validateId(transferId);
 
@@ -108,7 +108,7 @@ public class TransferService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Page<Transfer> getAllTransfersForOwner(final Long ownerId, final Pageable pageable) {
+    public Page<Transfer> getAllTransfersForOwner(final Long ownerId, final Pageable pageable) {
         validatePagination(pageable);
 
         validateId(ownerId);

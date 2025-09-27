@@ -11,7 +11,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.bankcards.model.user.User;
 
+import lombok.extern.slf4j.Slf4j;
 
+
+@Slf4j
 public final class CustomUserDetails implements UserDetails {
 
     private final Long userId;
@@ -20,8 +23,14 @@ public final class CustomUserDetails implements UserDetails {
     private final Set<GrantedAuthority> authorities;
 
     public static CustomUserDetails of(User user) {
-        Set<GrantedAuthority> authorities = user.getRoles().stream().map(
-                role -> new SimpleGrantedAuthority("ROLE_" + role.getName().toString())).collect(Collectors.toSet());
+        log.debug("Creating CustomUserDetails for user: {}", user.getId());
+
+        Set<GrantedAuthority> authorities = user.getRoles().stream().peek(
+                role -> log.debug("Processing role: {}", role.getName())).map(
+                        role -> new SimpleGrantedAuthority("ROLE_" + role.getName().toString())).collect(
+                                Collectors.toSet());
+
+        log.debug("Created {} authorities", authorities.size());
 
         return new CustomUserDetails(
                 user.getId(),
@@ -35,6 +44,11 @@ public final class CustomUserDetails implements UserDetails {
             final String email,
             final String password,
             final Set<GrantedAuthority> authorities) {
+        log.debug(
+                "CustomUserDetails constructor called with userId: {}, email: {}, authorities: {}",
+                userId,
+                email,
+                authorities.size());
         this.userId = userId;
         this.email = email;
         this.password = password;

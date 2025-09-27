@@ -66,7 +66,7 @@ public class UserService extends BaseService {
     // ------------------------------------ //
 
     @Transactional
-    public final User createUser(final Long adminId, final UserCreateRequest request) {
+    public User createUser(final Long adminId, final UserCreateRequest request) {
         validateId(adminId);
         checkAdminPermissionTo("create new user", adminId);
 
@@ -86,7 +86,7 @@ public class UserService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final User getUserByIdForAdmin(final Long adminId, final Long userId) {
+    public User getUserByIdForAdmin(final Long adminId, final Long userId) {
         validateId(adminId);
         validateId(userId);
 
@@ -96,15 +96,14 @@ public class UserService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final User getCurrentUserProfile(final Long userId) {
+    public User getCurrentUserProfile(final Long userId) {
         validateId(userId);
         return findUserById(userId);
     }
 
     @Transactional(readOnly = true)
-    public final Page<User> getAllUsers(final Long adminId, final Pageable pageable) {
+    public Page<User> getAllUsers(final Long adminId, final Pageable pageable) {
         validatePagination(pageable);
-
         validateId(adminId);
         checkAdminPermissionTo("get all users", adminId);
 
@@ -112,7 +111,7 @@ public class UserService extends BaseService {
     }
 
     @Transactional
-    public final User updateUserEmail(final Long userId, final UserUpdateEmailRequest request) {
+    public User updateUserEmail(final Long userId, final UserUpdateEmailRequest request) {
         validateId(userId);
 
         Email newEmail = new Email(request.email());
@@ -125,7 +124,7 @@ public class UserService extends BaseService {
     }
 
     @Transactional
-    public final User updateUserPassword(final Long userId, final UserUpdatePasswordRequest request) {
+    public User updateUserPassword(final Long userId, final UserUpdatePasswordRequest request) {
         validateId(userId);
 
         String rawNewPassword = request.password();
@@ -141,7 +140,7 @@ public class UserService extends BaseService {
     }
 
     @Transactional
-    public final void deleteUserById(final Long adminId, final Long userId) {
+    public void deleteUserById(final Long adminId, final Long userId) {
         validateId(adminId);
         validateId(userId);
 

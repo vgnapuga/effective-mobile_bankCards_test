@@ -16,7 +16,7 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: ${HIBERNATE_DDL_AUTO:create-drop}
+      ddl-auto: validate
     show-sql: ${JPA_SHOW_SQL:true}
     properties:
       hibernate:
@@ -24,7 +24,8 @@ spring:
         format_sql: true
 
   liquibase:
-    enabled: false
+    enabled: true
+    change-log: classpath:db/migration/db.changelog-master.xml
 
 app:
   security:
@@ -49,3 +50,4 @@ logging:
   level:
     com.example.bankcards: DEBUG
     org.springframework.security: INFO
+    org.springframework.web: INFO

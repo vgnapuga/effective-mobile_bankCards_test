@@ -59,7 +59,7 @@ public class CardService extends BaseService {
     // ------------------------------------ //
 
     @Transactional
-    public final Card createCard(final Long adminId, final CardCreateRequest request) {
+    public Card createCard(final Long adminId, final CardCreateRequest request) {
         validateId(adminId);
 
         Long forUserId = request.ownerId();
@@ -80,7 +80,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Card getCardByIdForAdmin(final Long adminId, final Long cardId) {
+    public Card getCardByIdForAdmin(final Long adminId, final Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
@@ -90,7 +90,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Page<Card> getAllCardsForAdmin(final Long adminId, final Pageable pageable) {
+    public Page<Card> getAllCardsForAdmin(final Long adminId, final Pageable pageable) {
         validatePagination(pageable);
 
         validateId(adminId);
@@ -100,7 +100,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Card getCardByIdForOwner(final Long ownerId, final Long cardId) {
+    public Card getCardByIdForOwner(final Long ownerId, final Long cardId) {
         validateId(ownerId);
         validateId(cardId);
 
@@ -111,7 +111,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public final Page<Card> getAllCardsForOwner(final Long ownerId, final Pageable pageable) {
+    public Page<Card> getAllCardsForOwner(final Long ownerId, final Pageable pageable) {
         if (pageable == null)
             throw new BusinessRuleViolationException("Pageable is required");
 
@@ -123,7 +123,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional
-    public final void deleteCardById(final Long adminId, final Long cardId) {
+    public void deleteCardById(final Long adminId, final Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
@@ -134,7 +134,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional
-    public final Card activateCardById(final Long adminId, final Long cardId) {
+    public Card activateCardById(final Long adminId, final Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
@@ -151,7 +151,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional
-    public final Card blockCardById(final Long adminId, final Long cardId) {
+    public Card blockCardById(final Long adminId, final Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
