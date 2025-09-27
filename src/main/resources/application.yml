@@ -36,18 +36,18 @@ app:
 
 springdoc:
   api-docs:
-    enabled: ${SWAGGER_ENABLED:true}
-    path: /api-docs
+    enabled: true
+    path: /v3/api-docs
   swagger-ui:
-    enabled: ${SWAGGER_ENABLED:true}
+    enabled: true
     path: /swagger-ui.html
-    url: /docs/openapi.yaml
-    try-it-out-enabled: true
-    operations-sorter: method
-    tags-sorter: alpha
+
+
 
 logging:
   level:
-    com.example.bankcards: DEBUG
-    org.springframework.security: INFO
-    org.springframework.web: INFO
+    '[com.example.bankcards]': DEBUG
+    '[org.springframework.security]': INFO
+    '[org.springframework.web]': INFO
+    '[org.springdoc]': DEBUG
+    '[org.springdoc.api]': TRACE

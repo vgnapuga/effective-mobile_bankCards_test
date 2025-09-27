@@ -5,7 +5,7 @@ info:
   version: 1.0.0
   contact:
     name: API Support
-    email: support@bankcards.com
+    email: nshavrin50@gmail.com
 
 servers:
   - url: http://localhost:8080
