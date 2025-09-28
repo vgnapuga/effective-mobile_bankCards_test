@@ -4,8 +4,10 @@ package com.example.bankcards.model.user.converter;
 import com.example.bankcards.model.user.vo.Password;
 
 import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 
+@Converter
 public final class PasswordConverter implements AttributeConverter<Password, String> {
 
     @Override
