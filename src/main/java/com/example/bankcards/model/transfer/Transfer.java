@@ -55,7 +55,7 @@ public class Transfer extends BaseEntity {
     }
 
     private static final void checkBusinessRules(final User owner, final Card fromCard, final Card toCard) {
-        if (!owner.getId().equals(toCard.getOwner().getId()) || !owner.getId().equals(fromCard.getOwner().getId()))
+        if (!owner.equals(toCard.getOwner()) || !owner.equals(fromCard.getOwner()))
             throw new BusinessRuleViolationException(TransferConstants.Amount.BUSINESS_RULE_VIOLATED_MESSAGE);
     }
 
