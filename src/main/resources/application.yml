@@ -33,6 +33,19 @@ app:
   jwt:
     secret: ${JWT_SECRET:dGVzdEp3dFNlY3JldEtleUZvckJhbmtDYXJkc0FwcGxpY2F0aW9uMTIzNDU2Nzg5MA==}
     expiration: ${JWT_EXPIRATION:3600000}
+  front:
+    origins:
+      - http://allowed-origin.com
+      - http://another-allowed-origin.com
+    methods: 
+      - POST
+      - GET
+      - PUT
+      - DELETE
+    headers: "*"
+    allowedCredentials: true
+    cache:
+      maxAge: 3600
 
 springdoc:
   api-docs:

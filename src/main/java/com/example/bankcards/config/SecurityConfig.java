@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.example.bankcards.security.CardEncryption;
 import com.example.bankcards.security.jwt.JwtAuthenticationFilter;
@@ -31,15 +32,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(final HttpSecurity http, final JwtAuthenticationFilter jwtAuthFilter)
-            throws Exception {
-        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(
-                auth -> auth.requestMatchers("/api/auth/**").permitAll().requestMatchers(
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/swagger-ui.html").permitAll().anyRequest().authenticated()).exceptionHandling(
-                                ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+    public SecurityFilterChain filterChain(
+            final HttpSecurity http,
+            final JwtAuthenticationFilter jwtAuthFilter,
+            final CorsConfigurationSource corsConfigurationSource) throws Exception {
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource)).csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(
+                        auth -> auth.requestMatchers("/api/auth/**").permitAll().requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html").permitAll().anyRequest().authenticated()).exceptionHandling(
+                                        ex -> ex.authenticationEntryPoint(
+                                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))).addFilterBefore(
+                                                        jwtAuthFilter,
+                                                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
