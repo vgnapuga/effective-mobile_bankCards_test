@@ -26,12 +26,16 @@ import com.example.bankcards.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/users")
 @RequiredArgsConstructor
 public final class AdminUserController extends BaseController {
+
+    private static final String ROOT = "/api/admin/users";
 
     private final UserService userService;
 
@@ -40,6 +44,7 @@ public final class AdminUserController extends BaseController {
             @Valid @RequestBody final UserCreateRequest request,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("POST(id={}) - {}", adminId, ROOT);
 
         User createdUser = userService.createUser(adminId, request);
         UserResponse response = UserResponse.of(createdUser);
@@ -50,6 +55,7 @@ public final class AdminUserController extends BaseController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponse> getUser(@PathVariable final Long userId, final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("GET(id={}) - {}/{}", adminId, ROOT, userId);
 
         User retrievedUser = userService.getUserByIdForAdmin(adminId, userId);
         UserResponse response = UserResponse.of(retrievedUser);
@@ -65,6 +71,8 @@ public final class AdminUserController extends BaseController {
             @RequestParam(defaultValue = "asc") final String sortDirection,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("GET(id={}) - {}", adminId, ROOT);
+
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
@@ -81,6 +89,8 @@ public final class AdminUserController extends BaseController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable final Long userId, Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("DELETE(id={}) - {}/{}", adminId, ROOT, userId);
+
         userService.deleteUserById(adminId, userId);
 
         return ResponseEntity.noContent().build();

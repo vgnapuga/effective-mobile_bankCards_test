@@ -18,18 +18,23 @@ import com.example.bankcards.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public final class UserController extends BaseController {
+
+    private static final String ROOT = "/api/users";
 
     private final UserService userService;
 
     @GetMapping
     public ResponseEntity<UserResponse> getProfile(final Authentication authentication) {
         final Long userId = getCurrentUserId(authentication);
+        log.info("GET(id={}) - {}", userId, ROOT);
 
         User retrievedUser = userService.getCurrentUserProfile(userId);
         UserResponse response = UserResponse.of(retrievedUser);
@@ -42,6 +47,7 @@ public final class UserController extends BaseController {
             @Valid @RequestBody UserUpdateEmailRequest request,
             final Authentication authentication) {
         Long userId = getCurrentUserId(authentication);
+        log.info("PUT(id={}) - {}/email", userId, ROOT);
 
         User updatedUser = userService.updateUserEmail(userId, request);
         UserResponse response = UserResponse.of(updatedUser);
@@ -54,6 +60,7 @@ public final class UserController extends BaseController {
             @Valid @RequestBody final UserUpdatePasswordRequest request,
             final Authentication authentication) {
         Long userId = getCurrentUserId(authentication);
+        log.info("PUT(id={}) - {}/password", userId, ROOT);
 
         User updatedUser = userService.updateUserPassword(userId, request);
         UserResponse response = UserResponse.of(updatedUser);

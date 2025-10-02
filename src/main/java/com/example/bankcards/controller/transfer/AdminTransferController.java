@@ -20,12 +20,16 @@ import com.example.bankcards.model.transfer.Transfer;
 import com.example.bankcards.service.TransferService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/transfers")
 @RequiredArgsConstructor
 public final class AdminTransferController extends BaseController {
+
+    private static final String ROOT = "/api/admin/transfers";
 
     private final TransferService transferService;
 
@@ -33,7 +37,8 @@ public final class AdminTransferController extends BaseController {
     public ResponseEntity<TransferResponse> getTransfer(
             @PathVariable final Long transferId,
             final Authentication authentication) {
-        final Long adminId = getCurrentUserId(authentication);
+        Long adminId = getCurrentUserId(authentication);
+        log.info("GET(id={}) - {}/{}", adminId, ROOT, transferId);
 
         Transfer retrievedTransfer = transferService.getTransferByIdForAdmin(adminId, transferId);
         TransferResponse response = TransferResponse.of(retrievedTransfer);
@@ -49,6 +54,8 @@ public final class AdminTransferController extends BaseController {
             @RequestParam(defaultValue = "asc") final String sortDirection,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("GET(id={}) - {}", adminId, ROOT);
+
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 

@@ -25,12 +25,16 @@ import com.example.bankcards.service.TransferService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/transfers")
 @RequiredArgsConstructor
 public final class UserTransferController extends BaseController {
+
+    private static final String ROOT = "/api/transfers";
 
     private final TransferService transferService;
 
@@ -39,6 +43,7 @@ public final class UserTransferController extends BaseController {
             @Valid @RequestBody final TransferRequest request,
             final Authentication authentication) {
         Long ownerId = getCurrentUserId(authentication);
+        log.info("POST(id={}) - {}", ownerId, ROOT);
 
         Transfer transfer = transferService.transferBetweenOwnCards(ownerId, request);
         TransferResponse response = TransferResponse.of(transfer);
@@ -51,6 +56,7 @@ public final class UserTransferController extends BaseController {
             @PathVariable final Long transferId,
             final Authentication authentication) {
         Long ownerId = getCurrentUserId(authentication);
+        log.info("GET(id={}) - {}/{}", ownerId, ROOT, transferId);
 
         Transfer retrievedTransfer = transferService.getTransferByIdForOwner(ownerId, transferId);
         TransferResponse response = TransferResponse.of(retrievedTransfer);
@@ -66,6 +72,8 @@ public final class UserTransferController extends BaseController {
             @RequestParam(defaultValue = "asc") final String sortDirection,
             final Authentication authentication) {
         Long ownerId = getCurrentUserId(authentication);
+        log.info("GET(id={}) - {}", ownerId, ROOT);
+
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 

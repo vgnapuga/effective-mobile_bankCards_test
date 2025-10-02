@@ -27,12 +27,16 @@ import com.example.bankcards.service.CardService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/cards")
 @RequiredArgsConstructor
 public final class AdminCardController extends BaseController {
+
+    private static final String ROOT = "/api/admin/cards";
 
     private final CardService cardService;
 
@@ -41,6 +45,7 @@ public final class AdminCardController extends BaseController {
             @Valid @RequestBody final CardCreateRequest request,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("POST(id={}) - {}", adminId, ROOT);
 
         Card createdCard = cardService.createCard(adminId, request);
         CardResponse response = CardResponse.of(createdCard);
@@ -51,6 +56,7 @@ public final class AdminCardController extends BaseController {
     @GetMapping("/{cardId}")
     public ResponseEntity<CardResponse> getCard(@PathVariable final Long cardId, final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("GET(id={}) - {}/{}", adminId, ROOT, cardId);
 
         Card retrievedCard = cardService.getCardByIdForAdmin(adminId, cardId);
         CardResponse response = CardResponse.of(retrievedCard);
@@ -66,6 +72,8 @@ public final class AdminCardController extends BaseController {
             @RequestParam(defaultValue = "asc") final String sortDirection,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("GET(id={}) - ", adminId, ROOT);
+
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
@@ -82,6 +90,8 @@ public final class AdminCardController extends BaseController {
     @DeleteMapping("/{cardId}")
     public ResponseEntity<Void> deleteCard(@PathVariable final Long cardId, final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("DELETE(id={}) - {}/{}", adminId, ROOT, cardId);
+
         cardService.deleteCardById(adminId, cardId);
 
         return ResponseEntity.noContent().build();
@@ -92,6 +102,7 @@ public final class AdminCardController extends BaseController {
             @PathVariable final Long cardId,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("PUT(id={}) - {}/activate/{}", adminId, ROOT, cardId);
 
         Card activeCard = cardService.activateCardById(adminId, cardId);
         CardResponse response = CardResponse.of(activeCard);
@@ -104,6 +115,7 @@ public final class AdminCardController extends BaseController {
             @PathVariable final Long cardId,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
+        log.info("PUT(id={}) - {}/block/{}", adminId, ROOT, cardId);
 
         Card blockedCard = cardService.blockCardById(adminId, cardId);
         CardResponse response = CardResponse.of(blockedCard);
