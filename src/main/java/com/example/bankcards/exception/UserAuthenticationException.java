@@ -15,4 +15,12 @@ public class UserAuthenticationException extends RuntimeException {
 
     }
 
+    public static final class InvalidToken extends UserAuthenticationException {
+
+        public InvalidToken(final String message) {
+            super(message);
+        }
+
+    }
+
 }

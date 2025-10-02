@@ -30,6 +30,19 @@ public final class GlobalExceptionHandler {
         return request.getDescription(false).replace("uri=", "");
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedExceptions(
+            final AccessDeniedException exception,
+            final WebRequest request) {
+        ErrorResponse response = ErrorResponse.of(
+                "ACCESS_PERMISSION_ERROR",
+                exception.getMessage(),
+                getPath(request),
+                HttpStatus.FORBIDDEN.value());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<DTOValidationErrorResponse> handleDTOValidationExceptions(
             final MethodArgumentNotValidException exception,
@@ -50,19 +63,6 @@ public final class GlobalExceptionHandler {
                 errorFields);
 
         return ResponseEntity.badRequest().body(response);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDeniedExceptions(
-            final AccessDeniedException exception,
-            final WebRequest request) {
-        ErrorResponse response = ErrorResponse.of(
-                "ACCESS_PERMISSION_ERROR",
-                exception.getMessage(),
-                getPath(request),
-                HttpStatus.FORBIDDEN.value());
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(BusinessRuleViolationException.class)

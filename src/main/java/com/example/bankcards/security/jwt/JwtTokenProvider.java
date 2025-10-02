@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.example.bankcards.exception.UserAuthenticationException;
 import com.example.bankcards.security.CustomUserDetails;
 
 import io.jsonwebtoken.Claims;
@@ -53,23 +54,20 @@ public final class JwtTokenProvider {
                                 SignatureAlgorithm.HS256).compact();
     }
 
-    public boolean validateToken(final String token) {
+    public void validateToken(final String token) {
         try {
             generateClaims(token);
-            return true;
         } catch (SignatureException e) {
-            log.error("Invalid JWT signature: {}", e.getMessage());
+            throw new UserAuthenticationException.InvalidToken("Invalid JWT signature: " + e.getMessage());
         } catch (MalformedJwtException e) {
-            log.error("Invalid JWT token: {}", e.getMessage());
+            throw new UserAuthenticationException.InvalidToken("Invalid JWT token: " + e.getMessage());
         } catch (ExpiredJwtException e) {
-            log.error("JWT token is expired: {}", e.getMessage());
+            throw new UserAuthenticationException.InvalidToken("JWT token is expired: " + e.getMessage());
         } catch (UnsupportedJwtException e) {
-            log.error("JWT token is unsupported: {}", e.getMessage());
+            throw new UserAuthenticationException.InvalidToken("JWT token is unsupported: " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.error("JWT claims string is empty: {}", e.getMessage());
+            throw new UserAuthenticationException.InvalidToken("JWT claims string is empty: " + e.getMessage());
         }
-
-        return false;
     }
 
     private Claims generateClaims(final String token) {
@@ -84,15 +82,6 @@ public final class JwtTokenProvider {
             return null;
         }
 
-    }
-
-    public Long getUserIdFromToken(final String token) {
-        try {
-            return this.generateClaims(token).get("userId", Long.class);
-        } catch (Exception e) {
-            log.error("Error extracting user ID from token: {}", e.getMessage());
-            return null;
-        }
     }
 
     public long getExpirationTime(final String token) {
