@@ -34,6 +34,9 @@
       <column name="password_hashed" type="VARCHAR(255)">
         <constraints nullable="false" />
       </column>
+      <column name="roles" type="VARCHAR(255)">
+        <constraints nullable="false" />
+      </column>
       <column name="created_at" type="TIMESTAMP">
         <constraints nullable="false" />
       </column>

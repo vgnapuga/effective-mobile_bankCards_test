@@ -7,23 +7,17 @@
   <changeSet id="002-insert-test-users" author="onenull">
     <comment>Insert test users with roles</comment>
 
-    <sql> INSERT INTO users (email, password_hashed, created_at, updated_at) VALUES
-      ('user@test.com', '$2a$12$SueZ4zDtnXGSEOjI4D6d8eh8cxl3aQU6ui8V5W9knpXFpVwy3BfOm', NOW(),
-      NOW()) ON CONFLICT (email) DO NOTHING; </sql>
+    <!-- USER -->
+    <sql> INSERT INTO users (email, password_hashed, roles, created_at, updated_at) VALUES
+      ('user@test.com', '$2a$12$SueZ4zDtnXGSEOjI4D6d8eh8cxl3aQU6ui8V5W9knpXFpVwy3BfOm', 'USER',
+      NOW(), NOW()) ON CONFLICT (email) DO NOTHING; </sql>
 
-    <sql>INSERT INTO users (email, password_hashed, created_at, updated_at) VALUES
-      ('admin@test.com', '$2a$12$SueZ4zDtnXGSEOjI4D6d8eh8cxl3aQU6ui8V5W9knpXFpVwy3BfOm', NOW(),
-      NOW()) ON CONFLICT (email) DO NOTHING; </sql>
+    <!-- ADMIN -->
+    <sql> INSERT INTO users (email, password_hashed, roles, created_at, updated_at) VALUES
+      ('admin@test.com', '$2a$12$SueZ4zDtnXGSEOjI4D6d8eh8cxl3aQU6ui8V5W9knpXFpVwy3BfOm', 'ADMIN',
+      NOW(), NOW()) ON CONFLICT (email) DO NOTHING; </sql>
 
-    <sql> INSERT INTO users_roles (user_id, role_id) SELECT u.id, r.id FROM users u, roles r WHERE
-      u.email = 'user@test.com' AND r.name = 'USER' ON CONFLICT DO NOTHING; </sql>
-
-    <sql> INSERT INTO users_roles (user_id, role_id) SELECT u.id, r.id FROM users u, roles r WHERE
-      u.email = 'admin@test.com' AND r.name = 'ADMIN' ON CONFLICT DO NOTHING; </sql>
-
-    <rollback> DELETE FROM users_roles WHERE user_id IN ( SELECT id FROM users WHERE email IN
-      ('user@test.com', 'admin@test.com') ); DELETE FROM users WHERE email IN ('user@test.com',
-      'admin@test.com'); </rollback>
+    <rollback> DELETE FROM users WHERE email IN ('user@test.com', 'admin@test.com'); </rollback>
   </changeSet>
 
 </databaseChangeLog>

@@ -47,7 +47,7 @@ public class User extends BaseEntity {
     private User(final Email email, final Password password, final Set<Role> roles) {
         this.email = Objects.requireNonNull(email, generateNullMessageFor("email"));
         this.password = Objects.requireNonNull(password, generateNullMessageFor("password"));
-        this.roles = roles;
+        this.roles = Objects.requireNonNull(roles, generateNullMessageFor("roles"));
     }
 
     public User(final Email email, final Password password, final Role role) {
@@ -120,7 +120,7 @@ public class User extends BaseEntity {
     }
 
     public Set<Role> getRoles() {
-        return new HashSet<>(this.roles);
+        return Set.copyOf(this.roles);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.example.bankcards.util;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -73,7 +74,18 @@ public class TestDataGenerator {
         List<User> users = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
-            String email = String.format("user%d@test.com", i);
+            // ИЗМЕНЕНО: используем testuser вместо user, чтобы избежать конфликта с
+            // user@test.com
+            String email = String.format("testuser%d@test.com", i);
+
+            // Проверяем, существует ли уже пользователь с таким email
+            if (userRepository.existsByEmail(new Email(email))) {
+                log.debug("User {} already exists, skipping", email);
+                // Добавляем существующего пользователя в список для генерации карт
+                userRepository.findByEmail(new Email(email)).ifPresent(users::add);
+                continue;
+            }
+
             String hashedPassword = passwordEncoder.encode("password123");
 
             User user = new User(new Email(email), new Password(hashedPassword), Role.USER);
@@ -91,6 +103,12 @@ public class TestDataGenerator {
     private List<Card> generateCards(List<User> users, int count) {
         log.info("Generating {} cards...", count);
         List<Card> cards = new ArrayList<>();
+
+        // Если пользователей нет, не генерируем карты
+        if (users.isEmpty()) {
+            log.warn("No users available to generate cards");
+            return cards;
+        }
 
         for (int i = 0; i < count; i++) {
             User owner = users.get(random.nextInt(users.size()));
@@ -171,7 +189,8 @@ public class TestDataGenerator {
                 fromCard.subtractBalance(amount);
                 toCard.addBalance(amount);
 
-                Transfer transfer = Transfer.of(owner, fromCard, toCard, amount);
+                // ИЗМЕНЕНО: используем пустой Set для категорий
+                Transfer transfer = Transfer.of(owner, fromCard, toCard, amount, new HashSet<>());
                 transferRepository.save(transfer);
 
                 generated++;
@@ -182,6 +201,7 @@ public class TestDataGenerator {
 
             } catch (Exception e) {
                 // Игнорируем ошибки и пробуем снова
+                log.debug("Failed to generate transfer: {}", e.getMessage());
                 continue;
             }
         }
