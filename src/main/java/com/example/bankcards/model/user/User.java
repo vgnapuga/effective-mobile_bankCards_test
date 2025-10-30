@@ -1,22 +1,19 @@
 package com.example.bankcards.model.user;
 
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
-import com.example.bankcards.exception.BusinessRuleViolationException;
-import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.model.BaseEntity;
 import com.example.bankcards.model.user.converter.EmailConverter;
 import com.example.bankcards.model.user.converter.PasswordConverter;
-import com.example.bankcards.model.user.converter.RoleConverter;
 import com.example.bankcards.model.user.vo.Email;
 import com.example.bankcards.model.user.vo.Password;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
 
@@ -32,57 +29,25 @@ public class User extends BaseEntity {
     @Convert(converter = PasswordConverter.class)
     private Password password;
 
-    @Column(name = "roles", nullable = false)
-    @Convert(converter = RoleConverter.class)
-    private Set<Role> roles = new HashSet<>();
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     public User() {
     }
 
-    public static User of(final Email email, final Password password, final Set<Role> roles) {
-        validateRoles(roles);
-        return new User(email, password, roles);
-    }
-
-    private User(final Email email, final Password password, final Set<Role> roles) {
-        this.email = Objects.requireNonNull(email, generateNullMessageFor("email"));
-        this.password = Objects.requireNonNull(password, generateNullMessageFor("password"));
-        this.roles = Objects.requireNonNull(roles, generateNullMessageFor("roles"));
+    public static User of(final Email email, final Password password, Role role) {
+        return new User(email, password, role);
     }
 
     public User(final Email email, final Password password, final Role role) {
         this.email = Objects.requireNonNull(email, generateNullMessageFor("email"));
         this.password = Objects.requireNonNull(password, generateNullMessageFor("password"));
-        this.roles.add(Objects.requireNonNull(role, generateNullMessageFor("role")));
-    }
-
-    public static final void validateRoles(final Set<Role> roles) {
-        if (roles == null)
-            throw new DomainValidationException("User roles is <null>");
-
-        if (roles.isEmpty())
-            throw new BusinessRuleViolationException("User must have at least 1 role");
-    }
-
-    public final void giveAdminRole() {
-        this.roles.add(Role.ADMIN);
-    }
-
-    public final void removeAdminRole() {
-        this.roles.removeIf(role -> role.equals(Role.ADMIN));
+        this.role = Objects.requireNonNull(role, generateNullMessageFor("role"));
     }
 
     public final boolean isAdmin() {
-        return isHasRole(Role.ADMIN);
-    }
-
-    private boolean isHasRole(final Role roleToCheck) {
-        for (Role role : roles) {
-            if (role == roleToCheck)
-                return true;
-        }
-
-        return false;
+        return this.role == Role.ADMIN;
     }
 
     public final void changeEmail(final Email newEmail) {
@@ -93,24 +58,6 @@ public class User extends BaseEntity {
         this.password = Objects.requireNonNull(newPassword, generateNullMessageFor("new password"));
     }
 
-    public final void changeRoles(final Set<Role> newRoles) {
-        validateRoles(newRoles);
-
-        this.roles.clear();
-        this.roles.addAll(newRoles);
-    }
-
-    public final void addRole(final Role newRole) {
-        this.roles.add(Objects.requireNonNull(newRole, generateNullMessageFor("role")));
-    }
-
-    public final void removeRole(final Role roleToRemove) {
-        if (this.roles.size() == 1)
-            throw new BusinessRuleViolationException("User must have at least 1 role");
-
-        this.roles.remove(roleToRemove);
-    }
-
     public Email getEmail() {
         return this.email;
     }
@@ -119,8 +66,8 @@ public class User extends BaseEntity {
         return this.password;
     }
 
-    public Set<Role> getRoles() {
-        return Set.copyOf(this.roles);
+    public Role getRole() {
+        return this.role;
     }
 
     @Override
@@ -129,6 +76,6 @@ public class User extends BaseEntity {
                 "User{id=%d, email=%s, password=***, roles=%s}",
                 this.id,
                 this.email.toString(),
-                this.roles.toString());
+                this.role);
     }
 }

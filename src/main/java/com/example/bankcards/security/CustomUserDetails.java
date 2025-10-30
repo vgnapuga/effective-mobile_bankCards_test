@@ -2,8 +2,7 @@ package com.example.bankcards.security;
 
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Collections;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,38 +19,36 @@ public final class CustomUserDetails implements UserDetails {
     private final Long userId;
     private final String email;
     private final String password;
-    private final Set<GrantedAuthority> authorities;
+    private final GrantedAuthority authority;
 
     public static CustomUserDetails of(User user) {
         log.debug("Creating CustomUserDetails for user: {}", user.getId());
 
-        Set<GrantedAuthority> authorities = user.getRoles().stream().peek(
-                role -> log.debug("Processing role: {}", role)).map(
-                        role -> new SimpleGrantedAuthority("ROLE_" + role.toString())).collect(Collectors.toSet());
+        GrantedAuthority authoritiy = new SimpleGrantedAuthority("ROLE_" + user.getRole().toString());
 
-        log.debug("Created {} authorities", authorities.size());
+        log.debug("Created 1 authority");
 
         return new CustomUserDetails(
                 user.getId(),
                 user.getEmail().getValue(),
                 user.getPassword().getValue(),
-                authorities);
+                authoritiy);
     }
 
     private CustomUserDetails(
             final Long userId,
             final String email,
             final String password,
-            final Set<GrantedAuthority> authorities) {
+            final GrantedAuthority authority) {
         log.debug(
                 "CustomUserDetails constructor called with userId: {}, email: {}, authorities: {}",
                 userId,
                 email,
-                authorities.size());
+                authority);
         this.userId = userId;
         this.email = email;
         this.password = password;
-        this.authorities = authorities;
+        this.authority = authority;
     }
 
     public Long getUserId() {
@@ -70,7 +67,7 @@ public final class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
+        return Collections.singleton(this.authority);
     }
 
     @Override

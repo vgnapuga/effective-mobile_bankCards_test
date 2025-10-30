@@ -26,7 +26,7 @@ public final class CustomUserDetailsService implements UserDetailsService {
         log.debug("Loading user by email: {}", email);
         try {
             User user = userService.findUserByEmail(email);
-            log.debug("Found user: {}, roles count: {}", user.getEmail(), user.getRoles().size());
+            log.debug("Found user: {}", user.getEmail());
 
             CustomUserDetails userDetails = CustomUserDetails.of(user);
             log.debug("Created UserDetails with {} authorities", userDetails.getAuthorities().size());
