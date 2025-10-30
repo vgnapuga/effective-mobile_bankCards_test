@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Nested;
@@ -45,6 +46,7 @@ import com.example.bankcards.model.card.vo.CardBalance;
 import com.example.bankcards.model.card.vo.CardExpiryDate;
 import com.example.bankcards.model.card.vo.CardNumber;
 import com.example.bankcards.model.transfer.Transfer;
+import com.example.bankcards.model.transfer.vo.Amount;
 import com.example.bankcards.model.user.Role;
 import com.example.bankcards.model.user.User;
 import com.example.bankcards.model.user.vo.Email;
@@ -61,6 +63,9 @@ class TransferServiceTest {
 
     @Mock
     private TransferRepository transferRepository;
+
+    @Mock
+    private TransferCategoryService transferCategoryService;
 
     @Mock
     private UserService userService;
@@ -97,6 +102,16 @@ class TransferServiceTest {
         }
     }
 
+    private void setCardOwner(Card card, User owner) {
+        try {
+            Field ownerField = Card.class.getDeclaredField("owner");
+            ownerField.setAccessible(true);
+            ownerField.set(card, owner);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private User createTestUser() {
         return new User(new Email(TEST_EMAIL), new Password(TEST_HASHED_PASSWORD), Role.USER);
     }
@@ -106,15 +121,15 @@ class TransferServiceTest {
         CardExpiryDate expiryDate = CardExpiryDate.of(2025, 12);
         CardBalance cardBalance = new CardBalance(balance);
 
-        return Card.of(cardNumber, owner, expiryDate, status, cardBalance, cardEncryption);
+        whenEncrypt();
+        Card card = Card.of(cardNumber, owner, expiryDate, status, cardBalance, cardEncryption);
+        setCardOwner(card, owner);
+
+        return card;
     }
 
     private Transfer createTestTransfer(User owner, Card fromCard, Card toCard) {
-        return Transfer.of(
-                owner,
-                fromCard,
-                toCard,
-                new com.example.bankcards.model.transfer.vo.Amount(TEST_TRANSFER_AMOUNT));
+        return Transfer.of(owner, fromCard, toCard, new Amount(TEST_TRANSFER_AMOUNT), new HashSet<>());
     }
 
     private void whenCheckAdminPermissionThrows() {
@@ -153,16 +168,23 @@ class TransferServiceTest {
         public void shouldReturnEntity_whenValidRequest() {
             User testUser = createTestUser();
             setId(testUser, TEST_USER_ID);
-            whenEncrypt();
+
             Card fromCard = createTestCard(testUser, BigDecimal.valueOf(500.00), CardStatus.ACTIVE);
+            setId(fromCard, TEST_FROM_CARD_ID);
+
             Card toCard = createTestCard(testUser, BigDecimal.valueOf(100.00), CardStatus.ACTIVE);
+            setId(toCard, TEST_TO_CARD_ID);
 
             whenFindUserById(testUser);
             when(cardService.findCardByIdForOwner(TEST_FROM_CARD_ID, testUser)).thenReturn(fromCard);
             when(cardService.findCardByIdForOwner(TEST_TO_CARD_ID, testUser)).thenReturn(toCard);
             whenSave();
 
-            TransferRequest request = new TransferRequest(TEST_FROM_CARD_ID, TEST_TO_CARD_ID, TEST_TRANSFER_AMOUNT);
+            TransferRequest request = new TransferRequest(
+                    TEST_FROM_CARD_ID,
+                    TEST_TO_CARD_ID,
+                    TEST_TRANSFER_AMOUNT,
+                    null);
 
             Transfer result = transferService.transferBetweenOwnCards(TEST_USER_ID, request);
 
@@ -182,7 +204,11 @@ class TransferServiceTest {
         @Test
         @Override
         public void shouldThrowException_whenNullId() {
-            TransferRequest request = new TransferRequest(TEST_FROM_CARD_ID, TEST_TO_CARD_ID, TEST_TRANSFER_AMOUNT);
+            TransferRequest request = new TransferRequest(
+                    TEST_FROM_CARD_ID,
+                    TEST_TO_CARD_ID,
+                    TEST_TRANSFER_AMOUNT,
+                    null);
 
             DomainValidationException exception = assertThrows(
                     DomainValidationException.class,
@@ -196,7 +222,11 @@ class TransferServiceTest {
         @ValueSource(longs = { 0L, -1L, -100L })
         @Override
         public void shouldThrowException_whenInvalidId(Long invalidId) {
-            TransferRequest request = new TransferRequest(TEST_FROM_CARD_ID, TEST_TO_CARD_ID, TEST_TRANSFER_AMOUNT);
+            TransferRequest request = new TransferRequest(
+                    TEST_FROM_CARD_ID,
+                    TEST_TO_CARD_ID,
+                    TEST_TRANSFER_AMOUNT,
+                    null);
 
             BusinessRuleViolationException exception = assertThrows(
                     BusinessRuleViolationException.class,
@@ -210,7 +240,11 @@ class TransferServiceTest {
         void shouldThrowException_whenUserNotFound() {
             whenFindUserByIdThrows();
 
-            TransferRequest request = new TransferRequest(TEST_FROM_CARD_ID, TEST_TO_CARD_ID, TEST_TRANSFER_AMOUNT);
+            TransferRequest request = new TransferRequest(
+                    TEST_FROM_CARD_ID,
+                    TEST_TO_CARD_ID,
+                    TEST_TRANSFER_AMOUNT,
+                    null);
 
             ResourceNotFoundException exception = assertThrows(
                     ResourceNotFoundException.class,
@@ -225,13 +259,19 @@ class TransferServiceTest {
         @Test
         void shouldThrowException_whenSameCard() {
             User testUser = createTestUser();
-            whenEncrypt();
+            setId(testUser, TEST_USER_ID);
+
             Card sameCard = createTestCard(testUser, BigDecimal.valueOf(500.00), CardStatus.ACTIVE);
+            setId(sameCard, TEST_FROM_CARD_ID);
 
             whenFindUserById(testUser);
-            when(cardService.findCardByIdForOwner(anyLong(), any(User.class))).thenReturn(sameCard);
+            when(cardService.findCardByIdForOwner(TEST_FROM_CARD_ID, testUser)).thenReturn(sameCard);
 
-            TransferRequest request = new TransferRequest(TEST_FROM_CARD_ID, TEST_FROM_CARD_ID, TEST_TRANSFER_AMOUNT);
+            TransferRequest request = new TransferRequest(
+                    TEST_FROM_CARD_ID,
+                    TEST_FROM_CARD_ID,
+                    TEST_TRANSFER_AMOUNT,
+                    null);
 
             BusinessRuleViolationException exception = assertThrows(
                     BusinessRuleViolationException.class,
@@ -247,15 +287,23 @@ class TransferServiceTest {
         @Test
         void shouldThrowException_whenFromCardNotActive() {
             User testUser = createTestUser();
-            whenEncrypt();
+            setId(testUser, TEST_USER_ID);
+
             Card fromCard = createTestCard(testUser, BigDecimal.valueOf(500.00), CardStatus.BLOCKED);
+            setId(fromCard, TEST_FROM_CARD_ID);
+
             Card toCard = createTestCard(testUser, BigDecimal.valueOf(100.00), CardStatus.ACTIVE);
+            setId(toCard, TEST_TO_CARD_ID);
 
             whenFindUserById(testUser);
             when(cardService.findCardByIdForOwner(TEST_FROM_CARD_ID, testUser)).thenReturn(fromCard);
             when(cardService.findCardByIdForOwner(TEST_TO_CARD_ID, testUser)).thenReturn(toCard);
 
-            TransferRequest request = new TransferRequest(TEST_FROM_CARD_ID, TEST_TO_CARD_ID, TEST_TRANSFER_AMOUNT);
+            TransferRequest request = new TransferRequest(
+                    TEST_FROM_CARD_ID,
+                    TEST_TO_CARD_ID,
+                    TEST_TRANSFER_AMOUNT,
+                    null);
 
             BusinessRuleViolationException exception = assertThrows(
                     BusinessRuleViolationException.class,
@@ -272,15 +320,23 @@ class TransferServiceTest {
         @Test
         void shouldThrowException_whenToCardNotActive() {
             User testUser = createTestUser();
-            whenEncrypt();
+            setId(testUser, TEST_USER_ID);
+
             Card fromCard = createTestCard(testUser, BigDecimal.valueOf(500.00), CardStatus.ACTIVE);
+            setId(fromCard, TEST_FROM_CARD_ID);
+
             Card toCard = createTestCard(testUser, BigDecimal.valueOf(100.00), CardStatus.PENDING_ACTIVATION);
+            setId(toCard, TEST_TO_CARD_ID);
 
             whenFindUserById(testUser);
             when(cardService.findCardByIdForOwner(TEST_FROM_CARD_ID, testUser)).thenReturn(fromCard);
             when(cardService.findCardByIdForOwner(TEST_TO_CARD_ID, testUser)).thenReturn(toCard);
 
-            TransferRequest request = new TransferRequest(TEST_FROM_CARD_ID, TEST_TO_CARD_ID, TEST_TRANSFER_AMOUNT);
+            TransferRequest request = new TransferRequest(
+                    TEST_FROM_CARD_ID,
+                    TEST_TO_CARD_ID,
+                    TEST_TRANSFER_AMOUNT,
+                    null);
 
             BusinessRuleViolationException exception = assertThrows(
                     BusinessRuleViolationException.class,
@@ -297,15 +353,23 @@ class TransferServiceTest {
         @Test
         void shouldThrowException_whenInsufficientFunds() {
             User testUser = createTestUser();
-            whenEncrypt();
+            setId(testUser, TEST_USER_ID);
+
             Card fromCard = createTestCard(testUser, BigDecimal.valueOf(50.00), CardStatus.ACTIVE);
+            setId(fromCard, TEST_FROM_CARD_ID);
+
             Card toCard = createTestCard(testUser, BigDecimal.valueOf(100.00), CardStatus.ACTIVE);
+            setId(toCard, TEST_TO_CARD_ID);
 
             whenFindUserById(testUser);
             when(cardService.findCardByIdForOwner(TEST_FROM_CARD_ID, testUser)).thenReturn(fromCard);
             when(cardService.findCardByIdForOwner(TEST_TO_CARD_ID, testUser)).thenReturn(toCard);
 
-            TransferRequest request = new TransferRequest(TEST_FROM_CARD_ID, TEST_TO_CARD_ID, TEST_TRANSFER_AMOUNT);
+            TransferRequest request = new TransferRequest(
+                    TEST_FROM_CARD_ID,
+                    TEST_TO_CARD_ID,
+                    TEST_TRANSFER_AMOUNT,
+                    null);
 
             BusinessRuleViolationException exception = assertThrows(
                     BusinessRuleViolationException.class,
@@ -321,7 +385,7 @@ class TransferServiceTest {
 
         @Test
         void shouldThrowException_whenNullFromCardId() {
-            TransferRequest request = new TransferRequest(null, TEST_TO_CARD_ID, TEST_TRANSFER_AMOUNT);
+            TransferRequest request = new TransferRequest(null, TEST_TO_CARD_ID, TEST_TRANSFER_AMOUNT, null);
 
             DomainValidationException exception = assertThrows(
                     DomainValidationException.class,
@@ -333,7 +397,7 @@ class TransferServiceTest {
 
         @Test
         void shouldThrowException_whenNullToCardId() {
-            TransferRequest request = new TransferRequest(TEST_FROM_CARD_ID, null, TEST_TRANSFER_AMOUNT);
+            TransferRequest request = new TransferRequest(TEST_FROM_CARD_ID, null, TEST_TRANSFER_AMOUNT, null);
 
             DomainValidationException exception = assertThrows(
                     DomainValidationException.class,
@@ -352,7 +416,7 @@ class TransferServiceTest {
         public void shouldReturnEntity_whenValidRequest() {
             User testUser = createTestUser();
             setId(testUser, TEST_ADMIN_ID);
-            whenEncrypt();
+
             Card fromCard = createTestCard(testUser, BigDecimal.valueOf(500.00), CardStatus.ACTIVE);
             Card toCard = createTestCard(testUser, BigDecimal.valueOf(100.00), CardStatus.ACTIVE);
             Transfer testTransfer = createTestTransfer(testUser, fromCard, toCard);
@@ -455,7 +519,7 @@ class TransferServiceTest {
         public void shouldReturnEntity_whenValidRequest() {
             User testUser = createTestUser();
             setId(testUser, TEST_USER_ID);
-            whenEncrypt();
+
             Card fromCard = createTestCard(testUser, BigDecimal.valueOf(500.00), CardStatus.ACTIVE);
             Card toCard = createTestCard(testUser, BigDecimal.valueOf(100.00), CardStatus.ACTIVE);
             Transfer testTransfer = createTestTransfer(testUser, fromCard, toCard);
@@ -545,7 +609,7 @@ class TransferServiceTest {
                     new Password(TEST_HASHED_PASSWORD),
                     Role.USER);
             setId(differentUser, TEST_USER_ID);
-            whenEncrypt();
+
             Card fromCard = createTestCard(requestUser, BigDecimal.valueOf(500.00), CardStatus.ACTIVE);
             Card toCard = createTestCard(requestUser, BigDecimal.valueOf(100.00), CardStatus.ACTIVE);
             Transfer testTransfer = createTestTransfer(requestUser, fromCard, toCard);
