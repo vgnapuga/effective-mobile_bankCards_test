@@ -47,9 +47,9 @@ public class UserService extends BaseService {
     }
 
     public void checkAdminPermissionTo(final String operationName, final Long adminId) {
-        userRepository.findAdminById(adminId).orElseThrow(
-                () -> new AccessDeniedException(
-                        String.format("Permission to %s denied for id=%d", operationName, adminId)));
+        User admin = findUserById(adminId);
+        if (!admin.isAdmin())
+            throw new AccessDeniedException(String.format("Permission to %s denied for id=%d", operationName, adminId));
     }
 
     public User findUserById(final Long userId) {

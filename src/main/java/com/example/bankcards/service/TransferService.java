@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TransferService extends BaseService {
 
     private final TransferRepository transferRepository;
+    private final TransferCategoryService categoryService;
     private final UserService userService;
     private final CardService cardService;
 

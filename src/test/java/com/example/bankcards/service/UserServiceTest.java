@@ -76,11 +76,8 @@ class UserServiceTest {
 
     private User createTestAdmin() {
         User admin = new User(new Email("admin@example.com"), new Password(TEST_HASHED_PASSWORD), Role.ADMIN);
+        admin.giveAdminRole();
         return admin;
-    }
-
-    private void whenFindAdminById(Optional<User> optional) {
-        when(userRepository.findAdminById(anyLong())).thenReturn(optional);
     }
 
     private void whenFindById(Optional<User> optional) {
@@ -108,7 +105,6 @@ class UserServiceTest {
         @Override
         public void shouldReturnEntity_whenValidRequest() {
             // Given
-            whenFindAdminById(Optional.of(createTestAdmin()));
             whenExistsByEmail(false);
             whenPasswordEncode();
             whenSave();
@@ -122,7 +118,6 @@ class UserServiceTest {
             assertNotNull(result);
             assertEquals(TEST_EMAIL, result.getEmail().getValue());
 
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).existsByEmail(any(Email.class));
             verify(passwordEncoder).encode(TEST_RAW_PASSWORD);
             verify(userRepository).save(any(User.class));
@@ -166,7 +161,6 @@ class UserServiceTest {
         @Override
         public void shouldThrowException_whenNotAdmin() {
             // Given
-            whenFindAdminById(Optional.empty());
             UserCreateRequest request = new UserCreateRequest(TEST_EMAIL, TEST_RAW_PASSWORD);
 
             // When
@@ -176,7 +170,6 @@ class UserServiceTest {
 
             // Then
             assertTrue(exception.getMessage().contains("Permission to create new user denied"));
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verifyNoMoreInteractions(userRepository);
             verifyNoInteractions(passwordEncoder);
         }
@@ -184,7 +177,6 @@ class UserServiceTest {
         @Test
         void shouldThrowException_whenEmailAlreadyExists() {
             // Given
-            whenFindAdminById(Optional.of(createTestAdmin()));
             whenExistsByEmail(true);
 
             UserCreateRequest request = new UserCreateRequest(TEST_EMAIL, TEST_RAW_PASSWORD);
@@ -196,7 +188,6 @@ class UserServiceTest {
 
             // Then
             assertTrue(exception.getMessage().contains("already exists"));
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).existsByEmail(any(Email.class));
             verifyNoMoreInteractions(userRepository);
             verifyNoInteractions(passwordEncoder);
@@ -218,7 +209,6 @@ class UserServiceTest {
 
             // Then
             assertTrue(exception.getMessage().contains("Invalid raw password length"));
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).existsByEmail(any(Email.class));
             verifyNoMoreInteractions(userRepository);
             verifyNoInteractions(passwordEncoder);
@@ -244,7 +234,6 @@ class UserServiceTest {
             assertNotNull(result);
             assertEquals(TEST_EMAIL, result.getEmail().getValue());
 
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).findById(TEST_USER_ID);
             verifyNoMoreInteractions(userRepository);
         }
@@ -306,9 +295,6 @@ class UserServiceTest {
         @Test
         @Override
         public void shouldThrowException_whenNotAdmin() {
-            // Given
-            whenFindAdminById(Optional.empty());
-
             // When
             AccessDeniedException exception = assertThrows(
                     AccessDeniedException.class,
@@ -316,7 +302,6 @@ class UserServiceTest {
 
             // Then
             assertTrue(exception.getMessage().contains("Permission to get user denied"));
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verifyNoMoreInteractions(userRepository);
         }
 
@@ -333,7 +318,6 @@ class UserServiceTest {
                     () -> userService.getUserByIdForAdmin(TEST_ADMIN_ID, TEST_USER_ID));
 
             assertTrue(exception.getMessage().contains("not found"));
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).findById(TEST_USER_ID);
             verifyNoMoreInteractions(userRepository);
         }
@@ -629,7 +613,6 @@ class UserServiceTest {
             assertDoesNotThrow(() -> userService.deleteUserById(TEST_ADMIN_ID, TEST_USER_ID));
 
             // Then
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).findById(TEST_USER_ID);
             verify(userRepository).delete(testUser);
             verifyNoMoreInteractions(userRepository);
@@ -692,9 +675,6 @@ class UserServiceTest {
         @Test
         @Override
         public void shouldThrowException_whenNotAdmin() {
-            // Given
-            whenFindAdminById(Optional.empty());
-
             // When
             AccessDeniedException exception = assertThrows(
                     AccessDeniedException.class,
@@ -702,7 +682,6 @@ class UserServiceTest {
 
             // Then
             assertTrue(exception.getMessage().contains("Permission to delete user denied"));
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verifyNoMoreInteractions(userRepository);
         }
 
@@ -720,7 +699,6 @@ class UserServiceTest {
 
             // Then
             assertTrue(exception.getMessage().contains("not found"));
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).findById(TEST_USER_ID);
             verifyNoMoreInteractions(userRepository);
         }
@@ -744,7 +722,6 @@ class UserServiceTest {
 
             // Then
             assertNotNull(result);
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).findAll(pageable);
             verifyNoMoreInteractions(userRepository);
         }
@@ -765,7 +742,6 @@ class UserServiceTest {
         void shouldThrowException_whenNotAdmin() {
             // Given
             Pageable pageable = PageRequest.of(0, 10);
-            whenFindAdminById(Optional.empty());
 
             // When
             AccessDeniedException exception = assertThrows(
@@ -774,7 +750,6 @@ class UserServiceTest {
 
             // Then
             assertTrue(exception.getMessage().contains("Permission to get all users denied"));
-            verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verifyNoMoreInteractions(userRepository);
         }
 
