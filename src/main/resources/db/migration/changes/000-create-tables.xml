@@ -7,8 +7,8 @@
   <changeSet id="000-create-tables" author="onenull">
     <comment>Create all tables</comment>
 
-    <!-- Create roles table -->
-    <createTable tableName="roles">
+    <!-- Create categories table -->
+    <createTable tableName="categories">
       <column name="id" type="BIGINT" autoIncrement="true">
         <constraints primaryKey="true" nullable="false" />
       </column>
@@ -38,16 +38,6 @@
         <constraints nullable="false" />
       </column>
       <column name="updated_at" type="TIMESTAMP">
-        <constraints nullable="false" />
-      </column>
-    </createTable>
-
-    <!-- Create users_roles table -->
-    <createTable tableName="users_roles">
-      <column name="user_id" type="BIGINT">
-        <constraints nullable="false" />
-      </column>
-      <column name="role_id" type="BIGINT">
         <constraints nullable="false" />
       </column>
     </createTable>
@@ -108,18 +98,24 @@
       </column>
     </createTable>
 
+    <!-- Create transfer_categories junction table -->
+    <createTable tableName="transfer_categories">
+      <column name="transfer_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+      <column name="category_id" type="BIGINT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Add primary key for transfer_categories -->
+    <addPrimaryKey
+      tableName="transfer_categories"
+      columnNames="transfer_id, category_id"
+      constraintName="pk_transfer_categories" />
+
     <!-- Add constraints -->
-    <addPrimaryKey tableName="users_roles" columnNames="user_id,role_id" />
 
-    <addForeignKeyConstraint
-      baseTableName="users_roles" baseColumnNames="user_id"
-      referencedTableName="users" referencedColumnNames="id"
-      constraintName="fk_users_roles_user" />
-
-    <addForeignKeyConstraint
-      baseTableName="users_roles" baseColumnNames="role_id"
-      referencedTableName="roles" referencedColumnNames="id"
-      constraintName="fk_users_roles_role" />
 
     <addForeignKeyConstraint
       baseTableName="cards" baseColumnNames="owner_id"
@@ -141,6 +137,18 @@
       baseTableName="transfers" baseColumnNames="to_card_id"
       referencedTableName="cards" referencedColumnNames="id"
       constraintName="fk_transfers_to_card" />
+
+    <addForeignKeyConstraint
+      baseTableName="transfer_categories" baseColumnNames="transfer_id"
+      referencedTableName="transfers" referencedColumnNames="id"
+      constraintName="fk_transfer_categories_transfer"
+      onDelete="CASCADE" />
+
+    <addForeignKeyConstraint
+      baseTableName="transfer_categories" baseColumnNames="category_id"
+      referencedTableName="categories" referencedColumnNames="id"
+      constraintName="fk_transfer_categories_category"
+      onDelete="CASCADE" />
 
   </changeSet>
 

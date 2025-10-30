@@ -1,6 +1,10 @@
 package com.example.bankcards.service;
 
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,6 +16,7 @@ import com.example.bankcards.exception.BusinessRuleViolationException;
 import com.example.bankcards.exception.ResourceNotFoundException;
 import com.example.bankcards.model.card.Card;
 import com.example.bankcards.model.transfer.Transfer;
+import com.example.bankcards.model.transfer.category.TransferCategory;
 import com.example.bankcards.model.transfer.vo.Amount;
 import com.example.bankcards.model.user.User;
 import com.example.bankcards.repository.TransferRepository;
@@ -73,7 +78,13 @@ public class TransferService extends BaseService {
         fromCard.subtractBalance(amount);
         toCard.addBalance(amount);
 
-        Transfer transfer = Transfer.of(owner, fromCard, toCard, amount);
+        Set<TransferCategory> categories = new HashSet<>();
+        if (request.categoryIds() != null && !request.categoryIds().isEmpty()) {
+            categories = request.categoryIds().stream().map(categoryService::getCategoryById).collect(
+                    Collectors.toSet());
+        }
+
+        Transfer transfer = Transfer.of(owner, fromCard, toCard, amount, categories);
 
         return transferRepository.save(transfer);
     }
