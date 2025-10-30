@@ -76,7 +76,6 @@ class UserServiceTest {
 
     private User createTestAdmin() {
         User admin = new User(new Email("admin@example.com"), new Password(TEST_HASHED_PASSWORD), Role.ADMIN);
-        admin.giveAdminRole();
         return admin;
     }
 
