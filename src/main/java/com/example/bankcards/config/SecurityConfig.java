@@ -33,9 +33,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(
-            final HttpSecurity http,
-            final JwtAuthenticationFilter jwtAuthFilter,
-            final CorsConfigurationSource corsConfigurationSource) throws Exception {
+            HttpSecurity http,
+            JwtAuthenticationFilter jwtAuthFilter,
+            CorsConfigurationSource corsConfigurationSource) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource)).csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
                         auth -> auth.requestMatchers("/api/auth/**").permitAll().requestMatchers(
@@ -56,7 +56,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CardEncryption cardEncryption(@Value("${app.security.card-encryption-key}") final String secretKey) {
+    public CardEncryption cardEncryption(@Value("${app.security.card-encryption-key}") String secretKey) {
         return CardEncryption.of(secretKey);
     }
+
 }

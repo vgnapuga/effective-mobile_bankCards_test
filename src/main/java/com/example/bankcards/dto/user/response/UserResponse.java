@@ -16,7 +16,7 @@ public record UserResponse(Long id, String email, Set<String> roles, LocalDateTi
         User nonNullUser = Objects.requireNonNull(user, UserConstants.DTO_REQUIRED_MESSAGE);
 
         String emailValue = nonNullUser.getEmail().getValue();
-        Set<String> roleNames = nonNullUser.getRoles().stream().map(role -> role.getName().toString()).collect(
+        Set<String> roleNames = nonNullUser.getRoles().stream().map(role -> role.toString()).collect(
                 Collectors.toSet());
 
         return new UserResponse(

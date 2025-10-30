@@ -14,7 +14,7 @@ import com.example.bankcards.exception.AccessDeniedException;
 import com.example.bankcards.exception.BusinessRuleViolationException;
 import com.example.bankcards.exception.ResourceAlreadyExistsException;
 import com.example.bankcards.exception.ResourceNotFoundException;
-import com.example.bankcards.model.role.Role;
+import com.example.bankcards.model.user.Role;
 import com.example.bankcards.model.user.User;
 import com.example.bankcards.model.user.vo.Email;
 import com.example.bankcards.model.user.vo.Password;
@@ -32,7 +32,6 @@ public class UserService extends BaseService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RoleService roleService;
 
     // ---------- Helper methods ---------- //
 
@@ -79,7 +78,7 @@ public class UserService extends BaseService {
         String hashedPassword = passwordEncoder.encode(rawPassword);
         Password password = new Password(hashedPassword);
 
-        Role userRole = roleService.getUserRole();
+        Role userRole = Role.USER;
         User user = new User(email, password, userRole);
 
         return userRepository.save(user);

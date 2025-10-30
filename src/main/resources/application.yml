@@ -17,11 +17,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: ${JPA_SHOW_SQL:true}
+    show-sql: ${JPA_SHOW_SQL:false}
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        '[format_sql]': true
 
   liquibase:
     enabled: true
@@ -54,8 +54,6 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
-
-
 
 logging:
   level:

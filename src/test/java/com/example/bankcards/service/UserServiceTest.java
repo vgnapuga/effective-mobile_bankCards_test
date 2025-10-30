@@ -38,8 +38,7 @@ import com.example.bankcards.exception.BusinessRuleViolationException;
 import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.exception.ResourceAlreadyExistsException;
 import com.example.bankcards.exception.ResourceNotFoundException;
-import com.example.bankcards.model.role.Role;
-import com.example.bankcards.model.role.RoleName;
+import com.example.bankcards.model.user.Role;
 import com.example.bankcards.model.user.User;
 import com.example.bankcards.model.user.vo.Email;
 import com.example.bankcards.model.user.vo.Password;
@@ -60,9 +59,6 @@ class UserServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @Mock
-    private RoleService roleService;
-
     @InjectMocks
     private UserService userService;
 
@@ -75,14 +71,11 @@ class UserServiceTest {
     // ---------- Helper methods ---------- //
 
     private User createTestUser() {
-        Role userRole = new Role(RoleName.USER);
-        return new User(new Email(TEST_EMAIL), new Password(TEST_HASHED_PASSWORD), userRole);
+        return new User(new Email(TEST_EMAIL), new Password(TEST_HASHED_PASSWORD), Role.USER);
     }
 
     private User createTestAdmin() {
-        Role adminRole = new Role(RoleName.ADMIN);
-        User admin = new User(new Email("admin@example.com"), new Password(TEST_HASHED_PASSWORD), adminRole);
-        admin.giveAdminRole();
+        User admin = new User(new Email("admin@example.com"), new Password(TEST_HASHED_PASSWORD), Role.ADMIN);
         return admin;
     }
 
@@ -102,10 +95,6 @@ class UserServiceTest {
         when(passwordEncoder.encode(TEST_RAW_PASSWORD)).thenReturn(TEST_HASHED_PASSWORD);
     }
 
-    private void whenGetUserRole() {
-        when(roleService.getUserRole()).thenReturn(new Role(RoleName.USER));
-    }
-
     private void whenSave() {
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
     }
@@ -122,7 +111,6 @@ class UserServiceTest {
             whenFindAdminById(Optional.of(createTestAdmin()));
             whenExistsByEmail(false);
             whenPasswordEncode();
-            whenGetUserRole();
             whenSave();
 
             UserCreateRequest request = new UserCreateRequest(TEST_EMAIL, TEST_RAW_PASSWORD);
@@ -137,9 +125,8 @@ class UserServiceTest {
             verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).existsByEmail(any(Email.class));
             verify(passwordEncoder).encode(TEST_RAW_PASSWORD);
-            verify(roleService).getUserRole();
             verify(userRepository).save(any(User.class));
-            verifyNoMoreInteractions(userRepository, passwordEncoder, roleService);
+            verifyNoMoreInteractions(userRepository, passwordEncoder);
         }
 
         @Test
@@ -155,7 +142,7 @@ class UserServiceTest {
 
             // Then
             assertEquals("Entity id is <null>", exception.getMessage());
-            verifyNoInteractions(userRepository, passwordEncoder, roleService);
+            verifyNoInteractions(userRepository, passwordEncoder);
         }
 
         @ParameterizedTest
@@ -172,7 +159,7 @@ class UserServiceTest {
 
             // Then
             assertTrue(exception.getMessage().contains("Entity id must be positive"));
-            verifyNoInteractions(userRepository, passwordEncoder, roleService);
+            verifyNoInteractions(userRepository, passwordEncoder);
         }
 
         @Test
@@ -191,7 +178,7 @@ class UserServiceTest {
             assertTrue(exception.getMessage().contains("Permission to create new user denied"));
             verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verifyNoMoreInteractions(userRepository);
-            verifyNoInteractions(passwordEncoder, roleService);
+            verifyNoInteractions(passwordEncoder);
         }
 
         @Test
@@ -212,7 +199,7 @@ class UserServiceTest {
             verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).existsByEmail(any(Email.class));
             verifyNoMoreInteractions(userRepository);
-            verifyNoInteractions(passwordEncoder, roleService);
+            verifyNoInteractions(passwordEncoder);
         }
 
         @ParameterizedTest
@@ -234,7 +221,7 @@ class UserServiceTest {
             verify(userRepository).findAdminById(TEST_ADMIN_ID);
             verify(userRepository).existsByEmail(any(Email.class));
             verifyNoMoreInteractions(userRepository);
-            verifyNoInteractions(passwordEncoder, roleService);
+            verifyNoInteractions(passwordEncoder);
         }
 
     }

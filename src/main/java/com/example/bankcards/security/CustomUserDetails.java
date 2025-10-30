@@ -26,9 +26,8 @@ public final class CustomUserDetails implements UserDetails {
         log.debug("Creating CustomUserDetails for user: {}", user.getId());
 
         Set<GrantedAuthority> authorities = user.getRoles().stream().peek(
-                role -> log.debug("Processing role: {}", role.getName())).map(
-                        role -> new SimpleGrantedAuthority("ROLE_" + role.getName().toString())).collect(
-                                Collectors.toSet());
+                role -> log.debug("Processing role: {}", role)).map(
+                        role -> new SimpleGrantedAuthority("ROLE_" + role.toString())).collect(Collectors.toSet());
 
         log.debug("Created {} authorities", authorities.size());
 

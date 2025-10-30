@@ -45,8 +45,7 @@ import com.example.bankcards.model.card.CardStatus;
 import com.example.bankcards.model.card.vo.CardBalance;
 import com.example.bankcards.model.card.vo.CardExpiryDate;
 import com.example.bankcards.model.card.vo.CardNumber;
-import com.example.bankcards.model.role.Role;
-import com.example.bankcards.model.role.RoleName;
+import com.example.bankcards.model.user.Role;
 import com.example.bankcards.model.user.User;
 import com.example.bankcards.model.user.vo.Email;
 import com.example.bankcards.model.user.vo.Password;
@@ -105,8 +104,7 @@ class CardServiceTest {
     }
 
     private User createTestUser(Long id) {
-        Role userRole = new Role(RoleName.USER);
-        User user = new User(new Email(TEST_EMAIL), new Password(TEST_HASHED_PASSWORD), userRole);
+        User user = new User(new Email(TEST_EMAIL), new Password(TEST_HASHED_PASSWORD), Role.USER);
         setId(user, id);
 
         return user;
@@ -459,7 +457,7 @@ class CardServiceTest {
             User differentUser = new User(
                     new Email("different@example.com"),
                     new Password(TEST_HASHED_PASSWORD),
-                    new Role(RoleName.USER));
+                    Role.USER);
 
             Card testCard = createTestCard();
             whenFindUserById(differentUser);

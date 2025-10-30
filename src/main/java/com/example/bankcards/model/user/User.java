@@ -8,8 +8,6 @@ import java.util.Set;
 import com.example.bankcards.exception.BusinessRuleViolationException;
 import com.example.bankcards.exception.DomainValidationException;
 import com.example.bankcards.model.BaseEntity;
-import com.example.bankcards.model.role.Role;
-import com.example.bankcards.model.role.RoleName;
 import com.example.bankcards.model.user.converter.EmailConverter;
 import com.example.bankcards.model.user.converter.PasswordConverter;
 import com.example.bankcards.model.user.vo.Email;
@@ -70,20 +68,20 @@ public class User extends BaseEntity {
     }
 
     public final void giveAdminRole() {
-        this.roles.add(new Role(RoleName.ADMIN));
+        this.roles.add(Role.ADMIN);
     }
 
     public final void removeAdminRole() {
-        this.roles.removeIf(role -> role.getName().equals(RoleName.ADMIN));
+        this.roles.removeIf(role -> role.equals(Role.ADMIN));
     }
 
     public final boolean isAdmin() {
-        return isHasRole(RoleName.ADMIN);
+        return isHasRole(Role.ADMIN);
     }
 
-    private boolean isHasRole(final RoleName roleToCheck) {
+    private boolean isHasRole(final Role roleToCheck) {
         for (Role role : roles) {
-            if (role.getName() == roleToCheck)
+            if (role == roleToCheck)
                 return true;
         }
 
