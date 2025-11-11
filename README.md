@@ -5,7 +5,7 @@ Backend-приложение на Spring Boot для управления бан
 ## 🏗 Архитектура и технологии
 
 ### Технический стек
-- **Java 21** + **Spring Boot 3.5.6**
+- **Java 21** + **Spring Boot 3.5.7**
 - **Spring Security** + **JWT** аутентификация
 - **PostgreSQL** + **Spring Data JPA**
 - **Liquibase** для миграций БД
@@ -21,20 +21,16 @@ erDiagram
         bigint id PK
         varchar email UK
         varchar password_hashed
+        varchar role
         timestamp created_at
         timestamp updated_at
     }
     
-    roles {
+    categories {
         bigint id PK
         varchar name UK
         timestamp created_at
         timestamp updated_at
-    }
-    
-    users_roles {
-        bigint user_id PK,FK
-        bigint role_id PK,FK
     }
     
     cards {
@@ -58,13 +54,18 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
+    
+    transfer_categories {
+        bigint transfer_id PK,FK
+        bigint category_id PK,FK
+    }
 
-    users ||--o{ users_roles : "user_id"
-    roles ||--o{ users_roles : "role_id"
     users ||--o{ cards : "owner_id"
     users ||--o{ transfers : "owner_id"
     cards ||--o{ transfers : "from_card_id"
     cards ||--o{ transfers : "to_card_id"
+    transfers ||--o{ transfer_categories : "transfer_id"
+    categories ||--o{ transfer_categories : "category_id"
 ```
 
 ### Архитектурные паттерны
@@ -105,6 +106,7 @@ erDiagram
 - ✅ Контроль состояния карт (активные/заблокированные/истекшие)
 - ✅ Переводы только между картами одного владельца
 - ✅ Валидация дат истечения карт
+- ✅ Категоризация переводов
 
 ## 🚀 Быстрый старт
 
@@ -160,6 +162,13 @@ docker-compose up -d
 | *1234 | *5678 | 250.00₽ | 7 дней назад |
 | *5678 | *1234 | 100.00₽ | 3 дня назад |
 | *1234 | *5678 | 50.50₽ | 1 день назад |
+
+#### Категории переводов
+- `SAVINGS` - Сбережения
+- `SALARY` - Зарплата
+- `INVESTMENTS` - Инвестиции
+- `VACATION` - Отпуск
+- `OTHER` - Прочее
 
 ### Аутентификация
 
@@ -227,6 +236,10 @@ curl -H "Authorization: Bearer $JWT_TOKEN" http://localhost:8080/api/cards
 - `POST /api/transfers` - Создание перевода
 - `GET /api/transfers` - История переводов пользователя
 - `GET /api/transfers/{id}` - Перевод по ID
+
+#### 📊 Переводы (Администратор)
+- `GET /api/admin/transfers` - Список всех переводов
+- `GET /api/admin/transfers/{id}` - Перевод по ID
 
 #### 👥 Управление пользователями (Администратор)
 - `POST /api/admin/users` - Создание пользователя
@@ -299,7 +312,8 @@ curl -X POST http://localhost:8080/api/transfers \
   -d '{
     "fromCardId": 1,
     "toCardId": 2,
-    "amount": 100.50
+    "amount": 100.50,
+    "categoryIds": [1, 2]
   }'
 ```
 
@@ -382,3 +396,4 @@ logging:
 - ✅ Global Exception Handling
 - ✅ Docker развертывание
 - ✅ Comprehensive тестирование
+- ✅ Категоризация переводов
