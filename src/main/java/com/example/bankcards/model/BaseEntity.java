@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 
 
 @MappedSuperclass
@@ -23,18 +22,9 @@ public abstract class BaseEntity {
     @Column(name = "created_at", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP", nullable = false, updatable = true)
-    private LocalDateTime updatedAt;
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
     }
 
     protected final String generateNullMessageFor(final String attributeName) {
@@ -47,10 +37,6 @@ public abstract class BaseEntity {
 
     public LocalDateTime getCreationTime() {
         return this.createdAt;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return this.updatedAt;
     }
 
     @Override

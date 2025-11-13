@@ -3,7 +3,7 @@ package com.example.bankcards.model.user;
 
 import java.util.Objects;
 
-import com.example.bankcards.model.BaseEntity;
+import com.example.bankcards.model.UpdatableEntity;
 import com.example.bankcards.model.user.converter.EmailConverter;
 import com.example.bankcards.model.user.converter.PasswordConverter;
 import com.example.bankcards.model.user.vo.Email;
@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User extends BaseEntity {
+public class User extends UpdatableEntity {
 
     @Column(name = "email", nullable = false, unique = true)
     @Convert(converter = EmailConverter.class)

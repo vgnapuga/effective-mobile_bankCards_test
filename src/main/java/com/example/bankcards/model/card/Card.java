@@ -9,7 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import com.example.bankcards.exception.BusinessRuleViolationException;
 import com.example.bankcards.exception.DomainValidationException;
-import com.example.bankcards.model.BaseEntity;
+import com.example.bankcards.model.UpdatableEntity;
 import com.example.bankcards.model.card.converter.CardBalanceConverter;
 import com.example.bankcards.model.card.converter.CardExpiryDateConverter;
 import com.example.bankcards.model.card.vo.CardBalance;
@@ -32,7 +32,7 @@ import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "cards")
-public class Card extends BaseEntity {
+public class Card extends UpdatableEntity {
 
     @Transient
     private CardNumber cardNumber;
