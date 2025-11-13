@@ -4,41 +4,36 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
 
-  <changeSet id="003-insert-test-cards" author="onenull">
-    <comment>Insert test cards for demonstration</comment>
+  <changeSet id="003-insert-test-transfers" author="onenull">
+    <comment>Insert test transfers for demonstration</comment>
 
-    <!-- Test cards for user@test.com -->
-    <sql> INSERT INTO cards (card_number_encrypted, card_number_last4, owner_id, expiry_date,
-      status, balance, created_at, updated_at) SELECT
-      'ZW5jcnlwdGVkQ2FyZE51bWJlcjEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2', -- Encrypted test card number
-      '1234', u.id, '2026-12-01', 'ACTIVE', 1500.00, NOW(), NOW() FROM users u WHERE u.email =
-      'user@test.com' ON CONFLICT DO NOTHING; </sql>
+    <!-- Test transfers between user's cards -->
+    <sql> INSERT INTO transfers (owner_id, from_card_id, to_card_id, amount, created_at) SELECT
+      u.id, (SELECT c1.id FROM cards c1 WHERE c1.owner_id = u.id AND c1.card_number_last4 = '1234'),
+      (SELECT c2.id FROM cards c2 WHERE c2.owner_id = u.id AND c2.card_number_last4 = '5678'),
+      250.00, NOW() - INTERVAL '7 days' FROM users u WHERE u.email = 'user@test.com' AND EXISTS
+      (SELECT 1 FROM cards c1 WHERE c1.owner_id = u.id AND c1.card_number_last4 = '1234') AND EXISTS
+      (SELECT 1 FROM cards c2 WHERE c2.owner_id = u.id AND c2.card_number_last4 = '5678') ON
+      CONFLICT DO NOTHING; </sql>
 
-    <sql> INSERT INTO cards (card_number_encrypted, card_number_last4, owner_id, expiry_date,
-      status, balance, created_at, updated_at) SELECT
-      'ZW5jcnlwdGVkQ2FyZE51bWJlcjk4NzY1NDMyMTA5ODc2NTQzMjEwOTg3NjU0', -- Encrypted test card number
-      '5678', u.id, '2025-06-01', 'ACTIVE', 750.50, NOW(), NOW() FROM users u WHERE u.email =
-      'user@test.com' ON CONFLICT DO NOTHING; </sql>
+    <sql> INSERT INTO transfers (owner_id, from_card_id, to_card_id, amount, created_at) SELECT
+      u.id, (SELECT c2.id FROM cards c2 WHERE c2.owner_id = u.id AND c2.card_number_last4 = '5678'),
+      (SELECT c1.id FROM cards c1 WHERE c1.owner_id = u.id AND c1.card_number_last4 = '1234'),
+      100.00, NOW() - INTERVAL '3 days' FROM users u WHERE u.email = 'user@test.com' AND EXISTS
+      (SELECT 1 FROM cards c1 WHERE c1.owner_id = u.id AND c1.card_number_last4 = '1234') AND EXISTS
+      (SELECT 1 FROM cards c2 WHERE c2.owner_id = u.id AND c2.card_number_last4 = '5678') ON
+      CONFLICT DO NOTHING; </sql>
 
-    <sql> INSERT INTO cards (card_number_encrypted, card_number_last4, owner_id, expiry_date,
-      status, balance, created_at, updated_at) SELECT
-      'ZW5jcnlwdGVkQ2FyZE51bWJlcjU1NTU0NDQ0MzMzMzIyMjIxMTExMDAwMA==', -- Encrypted test card number
-      '9999', u.id, '2024-03-01', 'BLOCKED', 0.00, NOW(), NOW() FROM users u WHERE u.email =
-      'user@test.com' ON CONFLICT DO NOTHING; </sql>
+    <sql> INSERT INTO transfers (owner_id, from_card_id, to_card_id, amount, created_at) SELECT
+      u.id, (SELECT c1.id FROM cards c1 WHERE c1.owner_id = u.id AND c1.card_number_last4 = '1234'),
+      (SELECT c2.id FROM cards c2 WHERE c2.owner_id = u.id AND c2.card_number_last4 = '5678'),
+      50.50, NOW() - INTERVAL '1 day' FROM users u WHERE u.email = 'user@test.com' AND EXISTS
+      (SELECT 1 FROM cards c1 WHERE c1.owner_id = u.id AND c1.card_number_last4 = '1234') AND EXISTS
+      (SELECT 1 FROM cards c2 WHERE c2.owner_id = u.id AND c2.card_number_last4 = '5678') ON
+      CONFLICT DO NOTHING; </sql>
 
-    <!-- Test cards for admin@test.com -->
-    <sql> INSERT INTO cards (card_number_encrypted, card_number_last4, owner_id, expiry_date,
-      status, balance, created_at, updated_at) SELECT
-      'ZW5jcnlwdGVkQ2FyZE51bWJlcjExMTEyMjIyMzMzMzQ0NDQ1NTU1NjY2Nw==', -- Encrypted test card number
-      '7777', u.id, '2027-01-01', 'ACTIVE', 5000.00, NOW(), NOW() FROM users u WHERE u.email =
-      'admin@test.com' ON CONFLICT DO NOTHING; </sql>
-
-    <sql> INSERT INTO cards (card_number_encrypted, card_number_last4, owner_id, expiry_date,
-      status, balance, created_at, updated_at) SELECT
-      'ZW5jcnlwdGVkQ2FyZE51bWJlcjg4ODg5OTk5MDAwMDExMTEyMjIyMzMzMw==', -- Encrypted test card number
-      '0000', u.id, '2025-12-01', 'PENDING_ACTIVATION', 0.00, NOW(), NOW() FROM users u WHERE
-      u.email = 'admin@test.com' ON CONFLICT DO NOTHING; </sql>
-
+    <rollback> DELETE FROM transfers WHERE owner_id IN ( SELECT id FROM users WHERE email IN
+      ('user@test.com', 'admin@test.com') ); </rollback>
   </changeSet>
 
 </databaseChangeLog>

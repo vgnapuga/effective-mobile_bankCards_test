@@ -8,12 +8,12 @@
     <comment>Insert test users with roles</comment>
 
     <!-- USER -->
-    <sql> INSERT INTO users (email, password_hashed, roles, created_at, updated_at) VALUES
+    <sql> INSERT INTO users (email, password_hashed, role, created_at, updated_at) VALUES
       ('user@test.com', '$2a$12$SueZ4zDtnXGSEOjI4D6d8eh8cxl3aQU6ui8V5W9knpXFpVwy3BfOm', 'USER',
       NOW(), NOW()) ON CONFLICT (email) DO NOTHING; </sql>
 
     <!-- ADMIN -->
-    <sql> INSERT INTO users (email, password_hashed, roles, created_at, updated_at) VALUES
+    <sql> INSERT INTO users (email, password_hashed, role, created_at, updated_at) VALUES
       ('admin@test.com', '$2a$12$SueZ4zDtnXGSEOjI4D6d8eh8cxl3aQU6ui8V5W9knpXFpVwy3BfOm', 'ADMIN',
       NOW(), NOW()) ON CONFLICT (email) DO NOTHING; </sql>
 

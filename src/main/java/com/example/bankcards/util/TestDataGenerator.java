@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -19,12 +20,15 @@ import com.example.bankcards.model.card.vo.CardBalance;
 import com.example.bankcards.model.card.vo.CardExpiryDate;
 import com.example.bankcards.model.card.vo.CardNumber;
 import com.example.bankcards.model.transfer.Transfer;
+import com.example.bankcards.model.transfer.category.CategoryName;
+import com.example.bankcards.model.transfer.category.TransferCategory;
 import com.example.bankcards.model.transfer.vo.Amount;
 import com.example.bankcards.model.user.Role;
 import com.example.bankcards.model.user.User;
 import com.example.bankcards.model.user.vo.Email;
 import com.example.bankcards.model.user.vo.Password;
 import com.example.bankcards.repository.CardRepository;
+import com.example.bankcards.repository.TransferCategoryRepository;
 import com.example.bankcards.repository.TransferRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.CardEncryption;
@@ -42,6 +46,7 @@ public class TestDataGenerator {
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
     private final TransferRepository transferRepository;
+    private final TransferCategoryRepository transferCategoryRepository;
     private final PasswordEncoder passwordEncoder;
     private final CardEncryption cardEncryption;
 
@@ -52,21 +57,32 @@ public class TestDataGenerator {
         return args -> {
             log.info("=== Starting test data generation ===");
 
-            // Проверяем, нужно ли генерировать данные
             long userCount = userRepository.count();
             if (userCount > 100) {
                 log.info("Database already contains {} users. Skipping generation.", userCount);
                 return;
             }
 
-            // Генерируем данные
+            ensureCategoriesExist();
+
             List<User> users = generateUsers(100);
             List<Card> cards = generateCards(users, 800);
-            generateTransfers(cards, 100);
+            generateTransfers(cards, 600);
 
             log.info("=== Test data generation completed ===");
             log.info("Generated: {} users, {} cards, {} transfers", users.size(), cards.size(), 100);
         };
+    }
+
+    private void ensureCategoriesExist() {
+        log.info("Ensuring categories exist...");
+        for (CategoryName categoryName : CategoryName.values()) {
+            if (!transferCategoryRepository.existsByName(categoryName)) {
+                TransferCategory category = new TransferCategory(categoryName);
+                transferCategoryRepository.save(category);
+                log.debug("Created category: {}", categoryName);
+            }
+        }
     }
 
     private List<User> generateUsers(int count) {
@@ -74,22 +90,16 @@ public class TestDataGenerator {
         List<User> users = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
-            // ИЗМЕНЕНО: используем testuser вместо user, чтобы избежать конфликта с
-            // user@test.com
             String email = String.format("testuser%d@test.com", i);
 
-            // Проверяем, существует ли уже пользователь с таким email
             if (userRepository.existsByEmail(new Email(email))) {
                 log.debug("User {} already exists, skipping", email);
-                // Добавляем существующего пользователя в список для генерации карт
                 userRepository.findByEmail(new Email(email)).ifPresent(users::add);
                 continue;
             }
 
             String hashedPassword = passwordEncoder.encode("password123");
-
             User user = new User(new Email(email), new Password(hashedPassword), Role.USER);
-
             users.add(userRepository.save(user));
 
             if ((i + 1) % 20 == 0) {
@@ -104,7 +114,6 @@ public class TestDataGenerator {
         log.info("Generating {} cards...", count);
         List<Card> cards = new ArrayList<>();
 
-        // Если пользователей нет, не генерируем карты
         if (users.isEmpty()) {
             log.warn("No users available to generate cards");
             return cards;
@@ -119,16 +128,12 @@ public class TestDataGenerator {
                     1 + random.nextInt(12) // 1-12
             );
 
-            // Случайный баланс от 0 до 10000
             BigDecimal balance = BigDecimal.valueOf(random.nextDouble() * 10000).setScale(2, BigDecimal.ROUND_HALF_UP);
-
             CardBalance cardBalance = new CardBalance(balance);
 
-            // Случайный статус (80% ACTIVE, 15% BLOCKED, 5% PENDING)
             CardStatus status = getRandomStatus();
 
             Card card = Card.of(cardNumber, owner, expiryDate, status, cardBalance, cardEncryption);
-
             cards.add(cardRepository.save(card));
 
             if ((i + 1) % 100 == 0) {
@@ -142,7 +147,6 @@ public class TestDataGenerator {
     private void generateTransfers(List<Card> cards, int count) {
         log.info("Generating {} transfers...", count);
 
-        // Фильтруем только активные карты
         List<Card> activeCards = cards.stream().filter(Card::isActive).toList();
 
         if (activeCards.size() < 2) {
@@ -150,19 +154,23 @@ public class TestDataGenerator {
             return;
         }
 
+        List<TransferCategory> allCategories = transferCategoryRepository.findAll();
+        if (allCategories.isEmpty()) {
+            log.warn("No categories found in database");
+            return;
+        }
+
         int generated = 0;
         int attempts = 0;
-        int maxAttempts = count * 10; // Максимум попыток
+        int maxAttempts = count * 10;
 
         while (generated < count && attempts < maxAttempts) {
             attempts++;
 
             try {
-                // Выбираем случайного владельца
                 Card fromCard = activeCards.get(random.nextInt(activeCards.size()));
                 User owner = fromCard.getOwner();
 
-                // Ищем другую карту того же владельца
                 List<Card> ownerCards = activeCards.stream().filter(
                         c -> c.getOwner().equals(owner) && !c.equals(fromCard)).toList();
 
@@ -172,7 +180,6 @@ public class TestDataGenerator {
 
                 Card toCard = ownerCards.get(random.nextInt(ownerCards.size()));
 
-                // Генерируем сумму (от 1 до баланса карты отправителя)
                 BigDecimal maxAmount = fromCard.getBalance().getValue();
                 if (maxAmount.compareTo(BigDecimal.ONE) <= 0) {
                     continue;
@@ -185,12 +192,12 @@ public class TestDataGenerator {
 
                 Amount amount = new Amount(transferAmount);
 
-                // Выполняем перевод
                 fromCard.subtractBalance(amount);
                 toCard.addBalance(amount);
 
-                // ИЗМЕНЕНО: используем пустой Set для категорий
-                Transfer transfer = Transfer.of(owner, fromCard, toCard, amount, new HashSet<>());
+                Set<TransferCategory> categories = getRandomCategories(allCategories);
+
+                Transfer transfer = Transfer.of(owner, fromCard, toCard, amount, categories);
                 transferRepository.save(transfer);
 
                 generated++;
@@ -200,13 +207,29 @@ public class TestDataGenerator {
                 }
 
             } catch (Exception e) {
-                // Игнорируем ошибки и пробуем снова
                 log.debug("Failed to generate transfer: {}", e.getMessage());
-                continue;
             }
         }
 
         log.info("Successfully generated {} transfers (attempted {})", generated, attempts);
+    }
+
+    private Set<TransferCategory> getRandomCategories(List<TransferCategory> allCategories) {
+        Set<TransferCategory> categories = new HashSet<>();
+
+        if (random.nextBoolean()) {
+            return categories;
+        }
+
+        int categoryCount = 1 + random.nextInt(3);
+        List<TransferCategory> shuffled = new ArrayList<>(allCategories);
+        java.util.Collections.shuffle(shuffled);
+
+        for (int i = 0; i < Math.min(categoryCount, shuffled.size()); i++) {
+            categories.add(shuffled.get(i));
+        }
+
+        return categories;
     }
 
     private CardStatus getRandomStatus() {
@@ -221,19 +244,15 @@ public class TestDataGenerator {
     }
 
     private String generateValidCardNumber() {
-        // Генерируем первые 15 цифр
         StringBuilder cardNumber = new StringBuilder();
 
-        // BIN (первые 6 цифр) - используем популярные префиксы
         String[] binPrefixes = { "453201", "424242", "555555", "411111", "378282" };
         cardNumber.append(binPrefixes[random.nextInt(binPrefixes.length)]);
 
-        // Следующие 9 цифр - случайные
         for (int i = 0; i < 9; i++) {
             cardNumber.append(random.nextInt(10));
         }
 
-        // Вычисляем контрольную цифру по алгоритму Луна
         int checksum = calculateLuhnChecksum(cardNumber.toString());
         cardNumber.append(checksum);
 
@@ -242,7 +261,7 @@ public class TestDataGenerator {
 
     private int calculateLuhnChecksum(String cardNumberWithout15) {
         int sum = 0;
-        boolean isEvenPosition = true; // Начинаем с позиции, которая будет чётной после добавления контрольной цифры
+        boolean isEvenPosition = true;
 
         for (int i = cardNumberWithout15.length() - 1; i >= 0; i--) {
             int digit = Character.getNumericValue(cardNumberWithout15.charAt(i));

@@ -12,7 +12,7 @@ import jakarta.persistence.PreUpdate;
 public abstract class UpdatableEntity extends BaseEntity {
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP", nullable = true, updatable = true)
-    private LocalDateTime updatedAt = null;
+    private LocalDateTime updatedAt;
 
     @PreUpdate
     protected void onUpdate() {

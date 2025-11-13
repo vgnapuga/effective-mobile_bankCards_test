@@ -7,20 +7,20 @@
   <changeSet id="001-insert-categories" author="onenull">
     <comment>Insert default transfer categories</comment>
 
-    <sql> INSERT INTO categories (name, created_at, updated_at) VALUES ('SAVINGS', NOW(), NOW()) ON
-      CONFLICT (name) DO NOTHING; </sql>
+    <sql> INSERT INTO categories (name, created_at) VALUES ('SAVINGS', NOW()) ON CONFLICT (name) DO
+      NOTHING; </sql>
 
-    <sql> INSERT INTO categories (name, created_at, updated_at) VALUES ('SALARY', NOW(), NOW()) ON
-      CONFLICT (name) DO NOTHING; </sql>
+    <sql> INSERT INTO categories (name, created_at) VALUES ('SALARY', NOW()) ON CONFLICT (name) DO
+      NOTHING; </sql>
 
-    <sql> INSERT INTO categories (name, created_at, updated_at) VALUES ('INVESTMENTS', NOW(), NOW())
-      ON CONFLICT (name) DO NOTHING; </sql>
+    <sql> INSERT INTO categories (name, created_at) VALUES ('INVESTMENTS', NOW()) ON CONFLICT (name)
+      DO NOTHING; </sql>
 
-    <sql> INSERT INTO categories (name, created_at, updated_at) VALUES ('VACATION', NOW(), NOW()) ON
-      CONFLICT (name) DO NOTHING; </sql>
+    <sql> INSERT INTO categories (name, created_at) VALUES ('VACATION', NOW()) ON CONFLICT (name) DO
+      NOTHING; </sql>
 
-    <sql> INSERT INTO categories (name, created_at, updated_at) VALUES ('OTHER', NOW(), NOW()) ON
-      CONFLICT (name) DO NOTHING; </sql>
+    <sql> INSERT INTO categories (name, created_at) VALUES ('OTHER', NOW()) ON CONFLICT (name) DO
+      NOTHING; </sql>
 
     <rollback>
       <sql> DELETE FROM categories WHERE name IN ('SAVINGS', 'SALARY', 'INVESTMENTS', 'VACATION',

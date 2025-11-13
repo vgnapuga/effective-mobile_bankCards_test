@@ -18,9 +18,6 @@
       <column name="created_at" type="TIMESTAMP">
         <constraints nullable="false" />
       </column>
-      <column name="updated_at" type="TIMESTAMP">
-        <constraints nullable="false" />
-      </column>
     </createTable>
 
     <!-- Create users table -->
@@ -34,14 +31,14 @@
       <column name="password_hashed" type="VARCHAR(255)">
         <constraints nullable="false" />
       </column>
-      <column name="roles" type="VARCHAR(255)">
+      <column name="role" type="VARCHAR(255)">
         <constraints nullable="false" />
       </column>
       <column name="created_at" type="TIMESTAMP">
         <constraints nullable="false" />
       </column>
       <column name="updated_at" type="TIMESTAMP">
-        <constraints nullable="false" />
+        <constraints nullable="true" />
       </column>
     </createTable>
 
@@ -72,7 +69,7 @@
         <constraints nullable="false" />
       </column>
       <column name="updated_at" type="TIMESTAMP">
-        <constraints nullable="false" />
+        <constraints nullable="true" />
       </column>
     </createTable>
 
@@ -96,9 +93,6 @@
       <column name="created_at" type="TIMESTAMP">
         <constraints nullable="false" />
       </column>
-      <column name="updated_at" type="TIMESTAMP">
-        <constraints nullable="false" />
-      </column>
     </createTable>
 
     <!-- Create transfer_categories junction table -->
@@ -118,8 +112,6 @@
       constraintName="pk_transfer_categories" />
 
     <!-- Add constraints -->
-
-
     <addForeignKeyConstraint
       baseTableName="cards" baseColumnNames="owner_id"
       referencedTableName="users" referencedColumnNames="id"
