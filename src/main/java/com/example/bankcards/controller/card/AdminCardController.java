@@ -1,6 +1,8 @@
 package com.example.bankcards.controller.card;
 
 
+import java.math.BigDecimal;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import com.example.bankcards.dto.card.request.CardCreateRequest;
 import com.example.bankcards.dto.card.response.CardListResponse;
 import com.example.bankcards.dto.card.response.CardResponse;
 import com.example.bankcards.model.card.Card;
+import com.example.bankcards.model.card.CardStatus;
 import com.example.bankcards.service.CardService;
 
 import jakarta.validation.Valid;
@@ -36,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public final class AdminCardController extends BaseController {
 
-    private static final String ROOT = "/api/admin/cards";
+    private static String ROOT = "/api/admin/cards";
 
     private final CardService cardService;
 
@@ -66,18 +69,29 @@ public final class AdminCardController extends BaseController {
 
     @GetMapping
     public ResponseEntity<CardListResponse> getAllCards(
-            @RequestParam(defaultValue = "0") final int page,
-            @RequestParam(defaultValue = "10") final int size,
-            @RequestParam(defaultValue = "id") final String sortBy,
-            @RequestParam(defaultValue = "asc") final String sortDirection,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(required = false) Long ownerId,
+            @RequestParam(required = false) CardStatus status,
+            @RequestParam(required = false) BigDecimal moreThan,
+            @RequestParam(required = false) BigDecimal lessThan,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
-        log.info("GET(id={}) - ", adminId, ROOT);
+        log.info(
+                "GET:all(id={}:admin) - {} - filters: owner_id={}, status={}, more_than={}, less_than={}",
+                adminId,
+                ROOT,
+                ownerId,
+                status,
+                moreThan,
+                lessThan);
 
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Card> cardPage = cardService.getAllCardsForAdmin(adminId, pageable);
+        Page<Card> cardPage = cardService.getAllCardsForAdmin(adminId, ownerId, status, moreThan, lessThan, pageable);
         CardListResponse response = new CardListResponse(
                 cardPage.getContent().stream().map(CardResponse::of).toList(),
                 cardPage.getTotalElements(),

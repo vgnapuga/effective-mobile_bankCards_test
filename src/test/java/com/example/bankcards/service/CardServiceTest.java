@@ -850,7 +850,7 @@ class CardServiceTest {
 
             when(cardRepository.findAll(pageable)).thenReturn(cardPage);
 
-            Page<Card> result = cardService.getAllCardsForAdmin(TEST_ADMIN_ID, pageable);
+            Page<Card> result = cardService.getAllCardsForAdmin(TEST_ADMIN_ID, null, null, null, null, pageable);
 
             assertNotNull(result);
             verify(userService).checkAdminPermissionTo("get all cards", TEST_ADMIN_ID);
@@ -862,7 +862,7 @@ class CardServiceTest {
         void shouldThrowException_whenNullPageable() {
             BusinessRuleViolationException exception = assertThrows(
                     BusinessRuleViolationException.class,
-                    () -> cardService.getAllCardsForAdmin(TEST_ADMIN_ID, null));
+                    () -> cardService.getAllCardsForAdmin(TEST_ADMIN_ID, null, null, null, null, null));
 
             assertEquals("Pageable is required", exception.getMessage());
             verifyNoInteractions(userService, cardRepository);
@@ -875,7 +875,7 @@ class CardServiceTest {
 
             AccessDeniedException exception = assertThrows(
                     AccessDeniedException.class,
-                    () -> cardService.getAllCardsForAdmin(TEST_ADMIN_ID, pageable));
+                    () -> cardService.getAllCardsForAdmin(TEST_ADMIN_ID, null, null, null, null, pageable));
 
             assertEquals("Permission denied", exception.getMessage());
             verify(userService).checkAdminPermissionTo("get all cards", TEST_ADMIN_ID);
@@ -897,7 +897,7 @@ class CardServiceTest {
             whenFindUserById(testOwner);
             when(cardRepository.findAllByOwner(testOwner, pageable)).thenReturn(cardPage);
 
-            Page<Card> result = cardService.getAllCardsForOwner(TEST_USER_ID, pageable);
+            Page<Card> result = cardService.getAllCardsForOwner(TEST_USER_ID, null, null, null, pageable);
 
             assertNotNull(result);
             verify(userService).findUserById(TEST_USER_ID);
@@ -909,7 +909,7 @@ class CardServiceTest {
         void shouldThrowException_whenNullPageable() {
             BusinessRuleViolationException exception = assertThrows(
                     BusinessRuleViolationException.class,
-                    () -> cardService.getAllCardsForOwner(TEST_USER_ID, null));
+                    () -> cardService.getAllCardsForOwner(TEST_USER_ID, null, null, null, null));
 
             assertEquals("Pageable is required", exception.getMessage());
             verifyNoInteractions(userService, cardRepository);
@@ -922,7 +922,7 @@ class CardServiceTest {
 
             ResourceNotFoundException exception = assertThrows(
                     ResourceNotFoundException.class,
-                    () -> cardService.getAllCardsForOwner(TEST_USER_ID, pageable));
+                    () -> cardService.getAllCardsForOwner(TEST_USER_ID, null, null, null, pageable));
 
             assertEquals("User not found", exception.getMessage());
             verify(userService).findUserById(TEST_USER_ID);

@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public final class AdminTransferController extends BaseController {
 
-    private static final String ROOT = "/api/admin/transfers";
+    private static String ROOT = "/api/admin/transfers";
 
     private final TransferService transferService;
 
@@ -48,10 +48,10 @@ public final class AdminTransferController extends BaseController {
 
     @GetMapping
     public ResponseEntity<TransferListResponse> getAllTransfers(
-            @RequestParam(defaultValue = "0") final int page,
-            @RequestParam(defaultValue = "10") final int size,
-            @RequestParam(defaultValue = "id") final String sortBy,
-            @RequestParam(defaultValue = "asc") final String sortDirection,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
         log.info("GET(id={}) - {}", adminId, ROOT);

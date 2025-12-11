@@ -37,12 +37,12 @@ public class TransferService extends BaseService {
 
     // ---------- Helper methods ---------- //
 
-    private Transfer findTransferByIdForAdmin(final Long transferId) {
+    private Transfer findTransferByIdForAdmin(Long transferId) {
         return transferRepository.findById(transferId).orElseThrow(
                 () -> new ResourceNotFoundException(String.format("Transfer with id=%d not found", transferId)));
     }
 
-    private final Transfer findTransferByIdForOwner(final Long transferId, final User owner) {
+    private final Transfer findTransferByIdForOwner(Long transferId, final User owner) {
         Transfer transfer = transferRepository.findById(transferId).orElseThrow(
                 () -> new ResourceNotFoundException(String.format("Transfer with id=%d was not found", transferId)));
 
@@ -55,7 +55,7 @@ public class TransferService extends BaseService {
     // ------------------------------------ //
 
     @Transactional
-    public Transfer transferBetweenOwnCards(final Long ownerId, final TransferRequest request) {
+    public Transfer transferBetweenOwnCards(Long ownerId, final TransferRequest request) {
         validateId(ownerId);
 
         Long fromCardId = request.fromCardId();
@@ -90,7 +90,7 @@ public class TransferService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public Transfer getTransferByIdForAdmin(final Long adminId, final Long transferId) {
+    public Transfer getTransferByIdForAdmin(Long adminId, Long transferId) {
         validateId(adminId);
         validateId(transferId);
 
@@ -99,7 +99,7 @@ public class TransferService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Transfer> getAllTransfersForAdmin(final Long adminId, final Pageable pageable) {
+    public Page<Transfer> getAllTransfersForAdmin(Long adminId, final Pageable pageable) {
         validatePagination(pageable);
 
         validateId(adminId);
@@ -109,7 +109,7 @@ public class TransferService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public Transfer getTransferByIdForOwner(final Long ownerId, final Long transferId) {
+    public Transfer getTransferByIdForOwner(Long ownerId, Long transferId) {
         validateId(ownerId);
         validateId(transferId);
 
@@ -120,7 +120,7 @@ public class TransferService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Transfer> getAllTransfersForOwner(final Long ownerId, final Pageable pageable) {
+    public Page<Transfer> getAllTransfersForOwner(Long ownerId, final Pageable pageable) {
         validatePagination(pageable);
 
         validateId(ownerId);

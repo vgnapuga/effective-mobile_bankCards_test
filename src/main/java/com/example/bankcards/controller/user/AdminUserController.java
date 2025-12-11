@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public final class AdminUserController extends BaseController {
 
-    private static final String ROOT = "/api/admin/users";
+    private static String ROOT = "/api/admin/users";
 
     private final UserService userService;
 
@@ -65,10 +65,10 @@ public final class AdminUserController extends BaseController {
 
     @GetMapping
     public ResponseEntity<UserListResponse> getAllUsers(
-            @RequestParam(defaultValue = "0") final int page,
-            @RequestParam(defaultValue = "10") final int size,
-            @RequestParam(defaultValue = "id") final String sortBy,
-            @RequestParam(defaultValue = "asc") final String sortDirection,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection,
             final Authentication authentication) {
         Long adminId = getCurrentUserId(authentication);
         log.info("GET(id={}) - {}", adminId, ROOT);

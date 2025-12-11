@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public final class UserController extends BaseController {
 
-    private static final String ROOT = "/api/users";
+    private static String ROOT = "/api/users";
 
     private final UserService userService;
 

@@ -23,7 +23,7 @@ public class TransferCategoryService extends BaseService {
     private final TransferCategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public TransferCategory getCategoryById(final Long categoryId) {
+    public TransferCategory getCategoryById(Long categoryId) {
         validateId(categoryId);
         return categoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException(String.format("Category with id=%d not found", categoryId)));

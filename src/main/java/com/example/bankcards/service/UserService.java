@@ -46,13 +46,13 @@ public class UserService extends BaseService {
                     UserConstants.Password.servicePasswordInvalidLengthMessage(rawPassword.length()));
     }
 
-    public void checkAdminPermissionTo(final String operationName, final Long adminId) {
+    public void checkAdminPermissionTo(final String operationName, Long adminId) {
         User admin = findUserById(adminId);
         if (!admin.isAdmin())
             throw new AccessDeniedException(String.format("Permission to %s denied for id=%d", operationName, adminId));
     }
 
-    public User findUserById(final Long userId) {
+    public User findUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException(String.format("User with id=%d not found", userId)));
     }
@@ -65,7 +65,7 @@ public class UserService extends BaseService {
     // ------------------------------------ //
 
     @Transactional
-    public User createUser(final Long adminId, final UserCreateRequest request) {
+    public User createUser(Long adminId, final UserCreateRequest request) {
         validateId(adminId);
         checkAdminPermissionTo("create new user", adminId);
 
@@ -85,7 +85,7 @@ public class UserService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public User getUserByIdForAdmin(final Long adminId, final Long userId) {
+    public User getUserByIdForAdmin(Long adminId, Long userId) {
         validateId(adminId);
         validateId(userId);
 
@@ -95,13 +95,13 @@ public class UserService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public User getCurrentUserProfile(final Long userId) {
+    public User getCurrentUserProfile(Long userId) {
         validateId(userId);
         return findUserById(userId);
     }
 
     @Transactional(readOnly = true)
-    public Page<User> getAllUsers(final Long adminId, final Pageable pageable) {
+    public Page<User> getAllUsers(Long adminId, final Pageable pageable) {
         validatePagination(pageable);
         validateId(adminId);
         checkAdminPermissionTo("get all users", adminId);
@@ -110,7 +110,7 @@ public class UserService extends BaseService {
     }
 
     @Transactional
-    public User updateUserEmail(final Long userId, final UserUpdateEmailRequest request) {
+    public User updateUserEmail(Long userId, final UserUpdateEmailRequest request) {
         validateId(userId);
 
         Email newEmail = new Email(request.email());
@@ -123,7 +123,7 @@ public class UserService extends BaseService {
     }
 
     @Transactional
-    public User updateUserPassword(final Long userId, final UserUpdatePasswordRequest request) {
+    public User updateUserPassword(Long userId, final UserUpdatePasswordRequest request) {
         validateId(userId);
 
         String rawNewPassword = request.password();
@@ -139,7 +139,7 @@ public class UserService extends BaseService {
     }
 
     @Transactional
-    public void deleteUserById(final Long adminId, final Long userId) {
+    public void deleteUserById(Long adminId, Long userId) {
         validateId(adminId);
         validateId(userId);
 

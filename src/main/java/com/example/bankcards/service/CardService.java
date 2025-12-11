@@ -36,7 +36,7 @@ public class CardService extends BaseService {
 
     // ---------- Helper methods ---------- //
 
-    private final Card findCardByIdForAdmin(final Long cardId) {
+    private final Card findCardByIdForAdmin(Long cardId) {
         return cardRepository.findById(cardId).orElseThrow(
                 () -> new ResourceNotFoundException(String.format("Card with id=%d was not found", cardId)));
     }
@@ -46,7 +46,7 @@ public class CardService extends BaseService {
             throw new BusinessRuleViolationException(String.format("Card with id=%d EXPIRED", card.getId()));
     }
 
-    public final Card findCardByIdForOwner(final Long cardId, final User owner) {
+    public final Card findCardByIdForOwner(Long cardId, final User owner) {
         Card card = cardRepository.findById(cardId).orElseThrow(
                 () -> new ResourceNotFoundException(String.format("Card with id=%d was not found", cardId)));
 
@@ -59,7 +59,7 @@ public class CardService extends BaseService {
     // ------------------------------------ //
 
     @Transactional
-    public Card createCard(final Long adminId, final CardCreateRequest request) {
+    public Card createCard(Long adminId, final CardCreateRequest request) {
         validateId(adminId);
 
         Long forUserId = request.ownerId();
@@ -80,7 +80,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public Card getCardByIdForAdmin(final Long adminId, final Long cardId) {
+    public Card getCardByIdForAdmin(Long adminId, Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
@@ -90,17 +90,28 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Card> getAllCardsForAdmin(final Long adminId, final Pageable pageable) {
+    public Page<Card> getAllCardsForAdmin(
+            Long adminId,
+            Long ownerId,
+            CardStatus status,
+            BigDecimal moreThan,
+            BigDecimal lessThan,
+            final Pageable pageable) {
         validatePagination(pageable);
 
         validateId(adminId);
         userService.checkAdminPermissionTo("get all cards", adminId);
 
-        return cardRepository.findAll(pageable);
+        if (ownerId != null && ownerId > 0)
+            userService.findUserById(ownerId);
+        else if (ownerId != null && ownerId <= 0)
+            throw new BusinessRuleViolationException(String.format(TEMPLATE_LESS_THAN_ONE_ID_MESSAGE, ownerId));
+
+        return cardRepository.findAllWithFilters(ownerId, status, moreThan, lessThan, pageable);
     }
 
     @Transactional(readOnly = true)
-    public Card getCardByIdForOwner(final Long ownerId, final Long cardId) {
+    public Card getCardByIdForOwner(Long ownerId, Long cardId) {
         validateId(ownerId);
         validateId(cardId);
 
@@ -111,19 +122,21 @@ public class CardService extends BaseService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Card> getAllCardsForOwner(final Long ownerId, final Pageable pageable) {
-        if (pageable == null)
-            throw new BusinessRuleViolationException("Pageable is required");
-
+    public Page<Card> getAllCardsForOwner(
+            Long ownerId,
+            CardStatus status,
+            BigDecimal moreThan,
+            BigDecimal lessThan,
+            final Pageable pageable) {
         validatePagination(pageable);
 
         User owner = userService.findUserById(ownerId);
 
-        return cardRepository.findAllByOwner(owner, pageable);
+        return cardRepository.findAllByOwnerWithFilters(owner, status, moreThan, lessThan, pageable);
     }
 
     @Transactional
-    public void deleteCardById(final Long adminId, final Long cardId) {
+    public void deleteCardById(Long adminId, Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
@@ -134,7 +147,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional
-    public Card activateCardById(final Long adminId, final Long cardId) {
+    public Card activateCardById(Long adminId, Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
@@ -151,7 +164,7 @@ public class CardService extends BaseService {
     }
 
     @Transactional
-    public Card blockCardById(final Long adminId, final Long cardId) {
+    public Card blockCardById(Long adminId, Long cardId) {
         validateId(adminId);
         validateId(cardId);
 
