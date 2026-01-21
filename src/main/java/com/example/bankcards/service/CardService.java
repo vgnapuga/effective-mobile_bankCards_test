@@ -1,10 +1,17 @@
 package com.example.bankcards.service;
 
 
+import static com.example.bankcards.repository.CardSpecification.balanceGreaterThanOrEqual;
+import static com.example.bankcards.repository.CardSpecification.balanceLessThanOrEqual;
+import static com.example.bankcards.repository.CardSpecification.hasOwner;
+import static com.example.bankcards.repository.CardSpecification.hasOwnerId;
+import static com.example.bankcards.repository.CardSpecification.hasStatus;
+
 import java.math.BigDecimal;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,16 +105,16 @@ public class CardService extends BaseService {
             BigDecimal lessThan,
             final Pageable pageable) {
         validatePagination(pageable);
-
         validateId(adminId);
         userService.checkAdminPermissionTo("get all cards", adminId);
 
-        if (ownerId != null && ownerId > 0)
-            userService.findUserById(ownerId);
-        else if (ownerId != null && ownerId <= 0)
+        if (ownerId != null && ownerId <= 0)
             throw new BusinessRuleViolationException(String.format(TEMPLATE_LESS_THAN_ONE_ID_MESSAGE, ownerId));
 
-        return cardRepository.findAllWithFilters(ownerId, status, moreThan, lessThan, pageable);
+        Specification<Card> spec = Specification.where(hasOwnerId(ownerId)).and(hasStatus(status)).and(
+                balanceGreaterThanOrEqual(moreThan)).and(balanceLessThanOrEqual(lessThan));
+
+        return cardRepository.findAll(spec, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -132,7 +139,10 @@ public class CardService extends BaseService {
 
         User owner = userService.findUserById(ownerId);
 
-        return cardRepository.findAllByOwnerWithFilters(owner, status, moreThan, lessThan, pageable);
+        Specification<Card> spec = Specification.where(hasOwner(owner)).and(hasStatus(status)).and(
+                balanceGreaterThanOrEqual(moreThan)).and(balanceLessThanOrEqual(lessThan));
+
+        return cardRepository.findAll(spec, pageable);
     }
 
     @Transactional

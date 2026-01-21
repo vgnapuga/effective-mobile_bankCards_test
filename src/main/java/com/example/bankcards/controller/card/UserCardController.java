@@ -53,7 +53,7 @@ public final class UserCardController extends BaseController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDirection,
-            @RequestParam(required = false) CardStatus status,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) BigDecimal moreThan,
             @RequestParam(required = false) BigDecimal lessThan,
             final Authentication authentication) {
@@ -69,7 +69,9 @@ public final class UserCardController extends BaseController {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Card> cardPage = cardService.getAllCardsForOwner(ownerId, status, moreThan, lessThan, pageable);
+        CardStatus cardStatus = status == null ? null : CardStatus.valueOf(status);
+
+        Page<Card> cardPage = cardService.getAllCardsForOwner(ownerId, cardStatus, moreThan, lessThan, pageable);
         CardListResponse response = new CardListResponse(
                 cardPage.getContent().stream().map(CardResponse::of).toList(),
                 cardPage.getTotalElements(),
